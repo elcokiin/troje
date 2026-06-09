@@ -11,12 +11,13 @@ function shortcutHotkeyKey(hotkey: RegisterableHotkey) {
 interface ShortcutKbdProps {
   hotkey: RegisterableHotkey
   className?: string
+  alwaysVisible?: boolean
 }
 
-export function ShortcutKbd({ hotkey, className }: ShortcutKbdProps) {
+export function ShortcutKbd({ hotkey, className, alwaysVisible = false }: ShortcutKbdProps) {
   const [showShortcutHints] = useShortcutPreference("brainbox-shortcut-hints")
 
-  if (!showShortcutHints) return null
+  if (!alwaysVisible && !showShortcutHints) return null
 
   return <Kbd className={className}>{formatForDisplay(hotkey)}</Kbd>
 }
@@ -24,12 +25,17 @@ export function ShortcutKbd({ hotkey, className }: ShortcutKbdProps) {
 interface ShortcutKbdGroupProps {
   hotkeys: RegisterableHotkey[]
   className?: string
+  alwaysVisible?: boolean
 }
 
-export function ShortcutKbdGroup({ hotkeys, className }: ShortcutKbdGroupProps) {
+export function ShortcutKbdGroup({
+  hotkeys,
+  className,
+  alwaysVisible = false,
+}: ShortcutKbdGroupProps) {
   const [showShortcutHints] = useShortcutPreference("brainbox-shortcut-hints")
 
-  if (!showShortcutHints) return null
+  if (!alwaysVisible && !showShortcutHints) return null
 
   return (
     <KbdGroup className={className}>

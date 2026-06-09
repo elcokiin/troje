@@ -277,7 +277,11 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     ].map((shortcut) => (
                       <div key={shortcut.id} className="flex items-center justify-between gap-3">
                         <span className="text-muted-foreground">{shortcut.label}</span>
-                        <ShortcutKbdGroup hotkeys={shortcut.hotkeys} className="flex-wrap justify-end" />
+                        <ShortcutKbdGroup
+                          hotkeys={shortcut.hotkeys}
+                          className="flex-wrap justify-end"
+                          alwaysVisible
+                        />
                       </div>
                     ))}
                   </div>
