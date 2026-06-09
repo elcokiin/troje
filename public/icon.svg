@@ -1,9 +1,21 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="180" height="180" rx="40" fill="#6F5BE8"/>
-  <path d="M44 72L90 42L136 72V133C136 139.627 130.627 145 124 145H56C49.373 145 44 139.627 44 133V72Z" fill="#F7F3FF"/>
-  <path d="M44 72L90 42L136 72" stroke="#211A4F" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M66 91H114" stroke="#211A4F" stroke-width="13" stroke-linecap="round"/>
-  <path d="M66 119H101" stroke="#211A4F" stroke-width="13" stroke-linecap="round"/>
-  <path d="M115 119C115 110.716 121.716 104 130 104C130 112.284 123.284 119 115 119Z" fill="#F2C94C"/>
-  <circle cx="115" cy="119" r="8" fill="#211A4F"/>
+  <style>
+    .ink { stroke: #211A4F; }
+    .ink-fill { fill: #211A4F; }
+    .soft { fill: #F7F3FF; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #F7F3FF; }
+      .ink-fill { fill: #F7F3FF; }
+      .soft { fill: #2A2358; }
+    }
+  </style>
+  <g transform="translate(90 98) scale(1.22) translate(-90 -98)">
+    <path class="soft" d="M46 77L90 48L134 77V132C134 140.284 127.284 147 119 147H61C52.716 147 46 140.284 46 132V77Z"/>
+    <path class="ink" d="M46 78L90 48L134 78" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ink" d="M57 86V132C57 134.209 58.791 136 61 136H119C121.209 136 123 134.209 123 132V86" stroke-width="10" stroke-linecap="round"/>
+    <path class="ink" d="M73 95H107" stroke-width="9" stroke-linecap="round"/>
+    <path class="ink" d="M73 116H98" stroke-width="9" stroke-linecap="round"/>
+    <path d="M103 124C103 112.954 111.954 104 123 104C123 115.046 114.046 124 103 124Z" fill="#D6A935"/>
+    <circle class="ink-fill" cx="103" cy="124" r="6"/>
+  </g>
 </svg>
