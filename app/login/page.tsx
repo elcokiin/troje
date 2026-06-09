@@ -1,6 +1,7 @@
 "use client"
 
 import { signIn } from "next-auth/react"
+import { AppLogo } from "@/components/app-logo"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -8,7 +9,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+        <CardHeader className="items-center text-center">
+          <AppLogo iconClassName="size-14" />
           <CardTitle className="text-2xl font-bold">Welcome to Troje</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
