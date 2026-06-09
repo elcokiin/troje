@@ -6,7 +6,7 @@ This document is intentionally high level. It is not an architecture decision re
 
 ## Goals
 
-- Troje should make it incredibly easy for users to capture ideas the moment they occur, removing every barrier and friction point. Never lose that "million-dollar idea."
+- Troje should make it incredibly easy for users to capture ideas the moment they occur, removing every barrier and friction point. Never lose that "million-dollar idea.", or a simple "tomato to the lunch".
 
 - The product should not require the user to structure, tag, or format the idea at capture time. Priority is raw, fast recording. Later, the system should provide easy paths (including AI assistance) to expand, classify, and act on those ideas — turning them into reality.
 
@@ -20,10 +20,6 @@ Troje has five primary product surfaces.
 
 A Progressive Web App is the single control center and operations hub. It works on both mobile and desktop from the browser, requiring no installation or app store. On mobile it serves as the quick-capture surface (voice, text, photo, home screen widgets). On desktop it becomes the full operations workspace for reviewing, organizing, expanding ideas, and configuring integrations. This avoids native app fragmentation while delivering a near-native experience.
 
-### Messaging Inputs (Zero-Friction Capture)
-
-To further reduce friction, Troje accepts idea submissions through messaging platforms users already have open: WhatsApp, Telegram, and similar channels. A user can send a voice note or text to a Troje bot and the idea is captured instantly — no app switching, no new tab, no learning curve. This is the ultimate zero-friction path because it lives where the user already communicates.
-
 ### MCP Server (Agent Access)
 
 Troje exposes an MCP (Model Context Protocol) server so AI agents — coding assistants, task automation agents, personal AI assistants — can connect directly to Troje's idea and action model. An agent can query recent ideas, create new ones, trigger actions, or retrieve context. This makes Troje a first-class tool in the agent ecosystem rather than just another note-taking app.
@@ -35,6 +31,10 @@ The hosted product ensures ideas sync securely and instantly across all devices.
 ### Offline / Local-First
 
 The architecture must work offline by default. Lack of connectivity should never prevent capturing an idea. Ideas are stored locally and sync to the cloud as soon as a network becomes available, ensuring the same fluidity regardless of environment conditions.
+
+### Messaging Inputs (Zero-Friction Capture)
+
+To further reduce friction, Troje accepts idea submissions through messaging platforms users already have open: WhatsApp, Telegram, and similar channels. A user can send a voice note or text to a Troje bot and the idea is captured instantly — no app switching, no new tab, no learning curve. This is the ultimate zero-friction path because it lives where the user already communicates.
 
 ## Core Concepts
 
