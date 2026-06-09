@@ -53,12 +53,17 @@ step and the verification needed for the change.
 
 ## Reference Material
 
-- This repo does not currently include `.reference/` or `notes/references.md`.
-  Do not assume reference repositories are available.
-- If the user explicitly provides a reference repository or URL for a task, ask
-  where they want it placed if the location matters. Otherwise, inspect it in a
-  disposable location and avoid adding it to the project unless the user wants it
-  committed.
+- Use `notes/references.md` as the project registry for external references,
+  inspiration repos, documents, articles, or URLs that are relevant to future
+  implementation decisions.
+- If the user explicitly provides a reference repository or URL for a task,
+  document it in `notes/references.md` with enough context to explain why it is
+  useful.
+- This repo does not currently include checked-in reference repositories. Do not
+  assume `.reference/` exists unless it is added later.
+- If a reference repository must be cloned for inspection, ask where it should be
+  placed if the location matters. Otherwise, inspect it in a disposable location
+  and avoid adding it to the project unless the user wants it committed.
 - Prefer local project files first: `README.md`, `notes/research/`, existing
   components, hooks, API routes, and shadcn configuration.
 
@@ -95,5 +100,9 @@ step and the verification needed for the change.
 
 - Required environment variables are documented in `.env.example` and `README.md`.
   `DATABASE_URL` is required for database-backed features.
-- Do not create or update `MISTAKES.md`, `DESIRES.md`, or `LEARNINGS.md` unless
-  those files are introduced as an explicit project convention.
+- Use `MISTAKES.md` to record mistakes made while working on the project, with
+  enough context to avoid repeating them.
+- Use `DESIRES.md` to record missing context, tools, scripts, docs, or
+  capabilities that would have made the work easier or safer.
+- Use `LEARNINGS.md` to record durable lessons about the project, environment,
+  tooling, or workflow that future agents should know.
