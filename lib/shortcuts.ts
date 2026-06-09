@@ -7,24 +7,21 @@ export type ShortcutPreferenceKey =
   | "brainbox-shortcut-new-idea"
   | "brainbox-shortcut-theme-toggle"
   | "brainbox-shortcut-settings"
+  | "brainbox-shortcut-helper-viewer"
 
 export type ShortcutId =
   | "newIdea"
   | "toggleTheme"
   | "settings"
-  | "settingsAlt"
   | "help"
+  | "toggleHelpViewer"
   | "inbox"
   | "archived"
   | "trash"
   | "navDown"
-  | "navDownArrow"
   | "navUp"
-  | "navUpArrow"
   | "navLeft"
-  | "navLeftArrow"
   | "navRight"
-  | "navRightArrow"
   | "openActions"
   | "deselect"
   | "saveCapture"
@@ -44,6 +41,7 @@ export const SHORTCUT_DEFAULTS: Record<ShortcutPreferenceKey, boolean> = {
   "brainbox-shortcut-new-idea": true,
   "brainbox-shortcut-theme-toggle": true,
   "brainbox-shortcut-settings": true,
+  "brainbox-shortcut-helper-viewer": true,
 }
 
 export const SHORTCUTS = {
@@ -73,6 +71,13 @@ export const SHORTCUTS = {
     label: "Shortcut help",
     hotkeys: ["F1"],
     category: "System",
+  },
+  toggleHelpViewer: {
+    id: "toggleHelpViewer",
+    label: "Show shortcut helper",
+    hotkeys: ["K"],
+    category: "System",
+    preferenceKey: "brainbox-shortcut-helper-viewer",
   },
   inbox: {
     id: "inbox",
@@ -105,7 +110,7 @@ export const SHORTCUTS = {
   navUp: {
     id: "navUp",
     label: "Navigate up",
-    hotkeys: ["K", "ArrowUp"],
+    hotkeys: ["ArrowUp"],
     category: "Navigation",
     preferenceKey: "brainbox-keyboard-nav",
   },

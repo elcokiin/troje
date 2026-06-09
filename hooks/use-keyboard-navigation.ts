@@ -23,68 +23,54 @@ export function useKeyboardNavigation({
 }: UseKeyboardNavigationOptions) {
   const hotkeys = useMemo<Array<UseHotkeyDefinition>>(() => {
     const hasItems = itemCount > 0
-    const registrations: Array<UseHotkeyDefinition> = [
-      {
-        hotkey: SHORTCUTS.navDown.hotkeys[0],
+    const registrations: Array<UseHotkeyDefinition> = []
+
+    for (const hotkey of SHORTCUTS.navDown.hotkeys) {
+      registrations.push({
+        hotkey,
         callback: () => {
           if (!hasItems) return
           onSelect(selectedIndex < itemCount - 1 ? selectedIndex + 1 : 0)
         },
-      },
-      {
-        hotkey: SHORTCUTS.navDown.hotkeys[1],
-        callback: () => {
-          if (!hasItems) return
-          onSelect(selectedIndex < itemCount - 1 ? selectedIndex + 1 : 0)
-        },
-      },
-      {
-        hotkey: SHORTCUTS.navUp.hotkeys[0],
+      })
+    }
+
+    for (const hotkey of SHORTCUTS.navUp.hotkeys) {
+      registrations.push({
+        hotkey,
         callback: () => {
           if (!hasItems) return
           onSelect(selectedIndex > 0 ? selectedIndex - 1 : itemCount - 1)
         },
-      },
-      {
-        hotkey: SHORTCUTS.navUp.hotkeys[1],
-        callback: () => {
-          if (!hasItems) return
-          onSelect(selectedIndex > 0 ? selectedIndex - 1 : itemCount - 1)
-        },
-      },
-      {
-        hotkey: SHORTCUTS.navLeft.hotkeys[0],
+      })
+    }
+
+    for (const hotkey of SHORTCUTS.navLeft.hotkeys) {
+      registrations.push({
+        hotkey,
         callback: () => {
           if (!hasItems) return
           onSelect(Math.max(0, selectedIndex - 3))
         },
-      },
-      {
-        hotkey: SHORTCUTS.navLeft.hotkeys[1],
-        callback: () => {
-          if (!hasItems) return
-          onSelect(Math.max(0, selectedIndex - 3))
-        },
-      },
-      {
-        hotkey: SHORTCUTS.navRight.hotkeys[0],
+      })
+    }
+
+    for (const hotkey of SHORTCUTS.navRight.hotkeys) {
+      registrations.push({
+        hotkey,
         callback: () => {
           if (!hasItems) return
           onSelect(Math.min(itemCount - 1, selectedIndex + 3))
         },
-      },
-      {
-        hotkey: SHORTCUTS.navRight.hotkeys[1],
-        callback: () => {
-          if (!hasItems) return
-          onSelect(Math.min(itemCount - 1, selectedIndex + 3))
-        },
-      },
-      {
-        hotkey: SHORTCUTS.deselect.hotkeys[0],
+      })
+    }
+
+    for (const hotkey of SHORTCUTS.deselect.hotkeys) {
+      registrations.push({
+        hotkey,
         callback: () => onSelect(-1),
-      },
-    ]
+      })
+    }
 
     if (onNew) {
       registrations.push({

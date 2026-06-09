@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Settings, Keyboard, Moon, Sun, Monitor, Palette, Key, Smartphone } from "lucide-react"
-import { Kbd } from "@/components/ui/kbd"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { cn } from "@/lib/utils"
 import { ApiKeysManager } from "@/components/api-keys-manager"
 import { PwaInstallManager } from "@/components/pwa-install-manager"
@@ -35,6 +35,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [newIdeaKeyEnabled, setNewIdeaKeyEnabled] = useShortcutPreference("brainbox-shortcut-new-idea")
   const [themeToggleKeyEnabled, setThemeToggleKeyEnabled] = useShortcutPreference("brainbox-shortcut-theme-toggle")
   const [settingsKeyEnabled, setSettingsKeyEnabled] = useShortcutPreference("brainbox-shortcut-settings")
+  const [helperViewerEnabled, setHelperViewerEnabled] = useShortcutPreference("brainbox-shortcut-helper-viewer")
   const [section, setSection] = useState<SettingsSection>("appearance")
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -61,11 +62,11 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   }, [isMobile, section])
 
   const renderShortcutKeys = (hotkeys: ShortcutDefinition["hotkeys"]) => (
-    <div className="flex flex-wrap justify-end gap-1">
+    <KbdGroup className="flex-wrap justify-end">
       {hotkeys.map((hotkey) => (
         <Kbd key={hotkey}>{formatForDisplay(hotkey)}</Kbd>
       ))}
-    </div>
+    </KbdGroup>
   )
 
   return (
@@ -244,6 +245,21 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                       onCheckedChange={setSettingsKeyEnabled}
                     />
                   </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <p className="text-sm">Shortcut helper viewer</p>
+                      <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                        <span>Press</span>
+                        {renderShortcutKeys(SHORTCUTS.toggleHelpViewer.hotkeys)}
+                        <span>to show or hide the helper button</span>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={helperViewerEnabled}
+                      onCheckedChange={setHelperViewerEnabled}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-3 pt-2 border-t">
@@ -254,6 +270,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                       SHORTCUTS.toggleTheme,
                       SHORTCUTS.settings,
                       SHORTCUTS.help,
+                      SHORTCUTS.toggleHelpViewer,
                       SHORTCUTS.inbox,
                       SHORTCUTS.archived,
                       SHORTCUTS.trash,

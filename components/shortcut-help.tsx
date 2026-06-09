@@ -11,17 +11,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Kbd } from "@/components/ui/kbd"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { useShortcutPreference } from "@/hooks/use-shortcut-preferences"
 import { SHORTCUT_GROUPS, SHORTCUTS, type ShortcutDefinition } from "@/lib/shortcuts"
 import { cn } from "@/lib/utils"
 
 function ShortcutKeys({ hotkeys }: { hotkeys: ShortcutDefinition["hotkeys"] }) {
   return (
-    <div className="flex flex-wrap justify-end gap-1">
+    <KbdGroup className="flex-wrap justify-end">
       {hotkeys.map((hotkey) => (
         <Kbd key={hotkey}>{formatForDisplay(hotkey)}</Kbd>
       ))}
-    </div>
+    </KbdGroup>
   )
 }
 
@@ -30,25 +31,33 @@ export function ShortcutHelp() {
   const heldKeys = useHeldKeys()
   const shiftHeld = useKeyHold("Shift")
   const shortcuts = Object.values(SHORTCUTS)
+  const [viewerEnabled, setViewerEnabled] = useShortcutPreference("brainbox-shortcut-helper-viewer")
 
   useHotkey(SHORTCUTS.help.hotkeys[0], () => setOpen(true), {
     ignoreInputs: true,
     preventDefault: true,
   })
 
+  useHotkey(SHORTCUTS.toggleHelpViewer.hotkeys[0], () => setViewerEnabled(!viewerEnabled), {
+    ignoreInputs: true,
+    preventDefault: true,
+  })
+
   return (
     <>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-4 left-4 z-50 gap-2 bg-background/95 shadow-sm backdrop-blur"
-      >
-        <Keyboard className="size-4" />
-        <span className="hidden sm:inline">Shortcuts</span>
-        <Kbd>{formatForDisplay(SHORTCUTS.help.hotkeys[0])}</Kbd>
-      </Button>
+      {viewerEnabled && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setOpen(true)}
+          className="fixed bottom-4 left-4 z-50 gap-2 bg-background/95 shadow-sm backdrop-blur"
+        >
+          <Keyboard className="size-4" />
+          <span className="hidden sm:inline">Shortcuts</span>
+          <Kbd>{formatForDisplay(SHORTCUTS.help.hotkeys[0])}</Kbd>
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-[620px]">
