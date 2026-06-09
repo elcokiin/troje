@@ -8,7 +8,6 @@ import { SettingsDialog } from "@/components/settings-dialog"
 import { ShortcutHelp } from "@/components/shortcut-help"
 import { Inbox, Archive, Trash2 } from "lucide-react"
 import { UserMenu } from "@/components/user-menu"
-import { AppLogo } from "@/components/app-logo"
 import { useTheme } from "@/components/theme-provider"
 import { SHORTCUTS } from "@/lib/shortcuts"
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences"
@@ -81,9 +80,6 @@ export function Dashboard({ user }: DashboardProps) {
       </div>
       
       <main className="container max-w-5xl mx-auto px-4 py-8 pt-16">
-        <header className="mb-6 flex justify-center">
-          <AppLogo />
-        </header>
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="space-y-6">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
             <TabsTrigger value="inbox" className="gap-2">
