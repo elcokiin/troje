@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -363,11 +362,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </div>
         </div>
 
-        <DialogFooter className="shrink-0 border-t bg-muted/10 px-6 py-4">
-          <Button type="button" variant="outline" onClick={() => onOpenChange?.(false)}>
-            Close
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
