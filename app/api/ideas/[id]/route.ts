@@ -1,7 +1,7 @@
-import { sql } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
+import { deleteIdea, findIdeaById, updateIdea } from "@/db/ideas"
 
 // Get authenticated user ID from session
 async function getAuthenticatedUserId(): Promise<string | null> {
@@ -29,18 +29,16 @@ export async function GET(
     
     const { id } = await params
     
-    const result = await sql`
-      SELECT * FROM ideas WHERE id = ${id} AND user_id = ${userId}
-    `
+    const idea = await findIdeaById({ id, userId })
     
-    if (result.length === 0) {
+    if (!idea) {
       return NextResponse.json(
         { error: "Idea not found" },
         { status: 404 }
       )
     }
     
-    return NextResponse.json({ idea: result[0] })
+    return NextResponse.json({ idea })
   } catch (error) {
     console.error("Failed to fetch idea:", error)
     return NextResponse.json(
@@ -69,17 +67,14 @@ export async function PATCH(
     const body = await request.json()
     const { content, status, tags, pinned, background_color } = body
     
-    // First, get the current idea (verify ownership)
-    const current = await sql`SELECT * FROM ideas WHERE id = ${id} AND user_id = ${userId}`
+    const idea = await findIdeaById({ id, userId })
     
-    if (current.length === 0) {
+    if (!idea) {
       return NextResponse.json(
         { error: "Idea not found" },
         { status: 404 }
       )
     }
-    
-    const idea = current[0]
     
     // Determine new values
     const newContent = content !== undefined ? content.trim() : idea.content
@@ -96,21 +91,20 @@ export async function PATCH(
       newDeletedAt = null
     }
     
-    const result = await sql`
-      UPDATE ideas 
-      SET 
-        content = ${newContent},
-        status = ${newStatus},
-        tags = ${newTags},
-        pinned = ${newPinned},
-        background_color = ${newBackgroundColor},
-        deleted_at = ${newDeletedAt},
-        updated_at = NOW()
-      WHERE id = ${id} AND user_id = ${userId}
-      RETURNING *
-    `
+    const updatedIdea = await updateIdea({
+      id,
+      userId,
+      values: {
+        content: newContent,
+        status: newStatus,
+        tags: newTags,
+        pinned: newPinned,
+        background_color: newBackgroundColor,
+        deleted_at: newDeletedAt,
+      },
+    })
     
-    return NextResponse.json({ idea: result[0] })
+    return NextResponse.json({ idea: updatedIdea })
   } catch (error) {
     console.error("Failed to update idea:", error)
     return NextResponse.json(
@@ -137,18 +131,16 @@ export async function DELETE(
     
     const { id } = await params
     
-    const result = await sql`
-      DELETE FROM ideas WHERE id = ${id} AND user_id = ${userId} RETURNING id
-    `
+    const deletedIdea = await deleteIdea({ id, userId })
     
-    if (result.length === 0) {
+    if (!deletedIdea) {
       return NextResponse.json(
         { error: "Idea not found" },
         { status: 404 }
       )
     }
     
-    return NextResponse.json({ success: true, id: result[0].id })
+    return NextResponse.json({ success: true, id: deletedIdea.id })
   } catch (error) {
     console.error("Failed to delete idea:", error)
     return NextResponse.json(

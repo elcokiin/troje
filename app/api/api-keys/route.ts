@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { sql } from "@/lib/db"
-import { ensureApiKeysTable, generateApiKey, hashApiKey } from "@/lib/api-keys"
+import { createApiKey, findApiKeysByUserId } from "@/db/api-keys"
+import { generateApiKey, hashApiKey } from "@/lib/api-keys"
 
 export async function GET() {
   try {
@@ -11,14 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    await ensureApiKeysTable()
-
-    const keys = await sql`
-      SELECT id, name, key_preview, created_at, last_used_at
-      FROM api_keys
-      WHERE user_id = ${session.user.id}
-      ORDER BY created_at DESC
-    `
+    const keys = await findApiKeysByUserId(session.user.id)
 
     return NextResponse.json({ keys })
   } catch (error) {
@@ -41,22 +34,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    await ensureApiKeysTable()
-
     const fullKey = generateApiKey()
     const keyHash = hashApiKey(fullKey)
     const keyPreview = fullKey.slice(-4)
 
-    const result = await sql`
-      INSERT INTO api_keys (user_id, name, key_hash, key_preview)
-      VALUES (${session.user.id}, ${name}, ${keyHash}, ${keyPreview})
-      RETURNING id, name, key_preview, created_at, last_used_at
-    `
+    const key = await createApiKey({
+      user_id: session.user.id,
+      name,
+      key_hash: keyHash,
+      key_preview: keyPreview,
+    })
 
     return NextResponse.json(
       {
         key: {
-          ...result[0],
+          ...key,
           full_key: fullKey,
         },
       },

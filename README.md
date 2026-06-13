@@ -162,10 +162,23 @@ CREATE TABLE ideas (
 
 ```bash
 bun install
+bun run db:migrate
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
+
+### Database Migrations
+
+Troje uses Drizzle ORM with Neon. Schema definitions live in `db/schema.ts`,
+runtime queries are grouped under `db/`, and generated migrations live in
+`drizzle/`.
+
+```bash
+bun run db:generate
+bun run db:migrate
+bun run db:studio
+```
 
 ---
 

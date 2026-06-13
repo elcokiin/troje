@@ -1,8 +1,8 @@
-import { sql } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
 import { getUserIdFromApiKey } from "@/lib/api-keys"
+import { createIdea, findIdeas } from "@/db/ideas"
 
 async function getUserIdFromAuthorizationHeader(request: NextRequest): Promise<string | null> {
   const authHeader = request.headers.get("authorization")
@@ -39,23 +39,11 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || "inbox"
     const search = searchParams.get("search")
     
-    let ideas
-    if (search) {
-      ideas = await sql`
-        SELECT * FROM ideas 
-        WHERE user_id = ${userId}
-        AND status = ${status} 
-        AND content ILIKE ${'%' + search + '%'}
-        ORDER BY pinned DESC, created_at DESC
-      `
-    } else {
-      ideas = await sql`
-        SELECT * FROM ideas 
-        WHERE user_id = ${userId}
-        AND status = ${status}
-        ORDER BY pinned DESC, created_at DESC
-      `
-    }
+    const ideas = await findIdeas({
+      userId,
+      status: status as "inbox" | "archived" | "deleted",
+      search,
+    })
     
     return NextResponse.json({ ideas })
   } catch (error) {
@@ -91,13 +79,16 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const result = await sql`
-      INSERT INTO ideas (user_id, content, source, status, pinned, background_color)
-      VALUES (${userId}, ${content.trim()}, ${source}, 'inbox', false, null)
-      RETURNING *
-    `
+    const idea = await createIdea({
+      user_id: userId,
+      content: content.trim(),
+      source,
+      status: "inbox",
+      pinned: false,
+      background_color: null,
+    })
     
-    return NextResponse.json({ idea: result[0] }, { status: 201 })
+    return NextResponse.json({ idea }, { status: 201 })
   } catch (error) {
     console.error("Failed to create idea:", error)
     return NextResponse.json(

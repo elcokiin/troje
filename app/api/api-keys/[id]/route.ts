@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { sql } from "@/lib/db"
-import { ensureApiKeysTable } from "@/lib/api-keys"
+import { deleteApiKey, updateApiKeyName } from "@/db/api-keys"
 
 export async function PATCH(
   request: NextRequest,
@@ -22,20 +21,18 @@ export async function PATCH(
     }
 
     const { id } = await params
-    await ensureApiKeysTable()
 
-    const result = await sql`
-      UPDATE api_keys
-      SET name = ${name}
-      WHERE id = ${id} AND user_id = ${session.user.id}
-      RETURNING id, name, key_preview, created_at, last_used_at
-    `
+    const key = await updateApiKeyName({
+      id,
+      userId: session.user.id,
+      name,
+    })
 
-    if (result.length === 0) {
+    if (!key) {
       return NextResponse.json({ error: "API key not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ key: result[0] })
+    return NextResponse.json({ key })
   } catch (error) {
     console.error("Failed to update API key:", error)
     return NextResponse.json({ error: "Failed to update API key" }, { status: 500 })
@@ -53,15 +50,10 @@ export async function DELETE(
     }
 
     const { id } = await params
-    await ensureApiKeysTable()
 
-    const result = await sql`
-      DELETE FROM api_keys
-      WHERE id = ${id} AND user_id = ${session.user.id}
-      RETURNING id
-    `
+    const key = await deleteApiKey({ id, userId: session.user.id })
 
-    if (result.length === 0) {
+    if (!key) {
       return NextResponse.json({ error: "API key not found" }, { status: 404 })
     }
 

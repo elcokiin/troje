@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/db"
+import { getDb } from "@/db/client"
+import { users } from "@/db/schema"
 
 export async function GET() {
   const timestamp = new Date().toISOString()
 
   try {
-    await sql`SELECT 1`
+    const db = getDb()
+    await db.select({ id: users.id }).from(users).limit(1)
 
     return NextResponse.json({
       status: "ok",
