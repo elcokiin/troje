@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
-import { ShortcutKbd } from "@/components/shortcut-kbd"
+import { ShortcutKbd } from "@/components/shortcuts/shortcut-kbd"
 import { Plus, Send } from "lucide-react"
 import { SHORTCUTS } from "@/lib/shortcuts"
 

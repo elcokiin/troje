@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ShortcutKbdGroup } from "@/components/shortcut-kbd"
+import { ShortcutKbdGroup } from "@/components/shortcuts/shortcut-kbd"
 import { SHORTCUT_GROUPS, SHORTCUTS } from "@/lib/shortcuts"
 import { cn } from "@/lib/utils"
 

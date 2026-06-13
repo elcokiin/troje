@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react"
 import useSWR from "swr"
-import { IdeaCard, type Idea } from "@/components/idea-card"
-import { QuickCapture } from "@/components/quick-capture"
+import { IdeaCard, type Idea } from "@/components/ideas/idea-card"
+import { QuickCapture } from "@/components/ideas/quick-capture"
 import {
   Empty,
   EmptyContent,

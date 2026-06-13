@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useHotkey } from "@tanstack/react-hotkeys"
-import { useTheme } from "@/components/theme-provider"
+import { useTheme } from "@/components/providers/theme-provider"
 import {
   Dialog,
   DialogContent,
@@ -27,15 +27,15 @@ import {
   Smartphone,
   Sun,
 } from "lucide-react"
-import { ShortcutKbd, ShortcutKbdGroup } from "@/components/shortcut-kbd"
+import { ShortcutKbd, ShortcutKbdGroup } from "@/components/shortcuts/shortcut-kbd"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { ApiKeysManager } from "@/components/api-keys-manager"
-import { PwaInstallManager } from "@/components/pwa-install-manager"
+import { ApiKeysManager } from "@/components/settings/api-keys-manager"
+import { PwaInstallManager } from "@/components/settings/pwa-install-manager"
 import { SHORTCUTS } from "@/lib/shortcuts"
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences"
 
