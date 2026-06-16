@@ -98,6 +98,7 @@ export function IdeaCard({
     enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
+    conflictBehavior: "replace",
   });
 
   useHotkey(SHORTCUTS.copyIdea.hotkeys[0], () => {
@@ -108,6 +109,7 @@ export function IdeaCard({
     enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
+    conflictBehavior: "replace",
   });
 
   useHotkey(SHORTCUTS.togglePin.hotkeys[0], () => {
@@ -116,6 +118,7 @@ export function IdeaCard({
     enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
+    conflictBehavior: "replace",
   });
 
   const selectedColor = CARD_COLORS.find((c) => c.id === idea.background_color);
@@ -163,29 +166,26 @@ export function IdeaCard({
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <CopyToClipboard
-            text={idea.content}
-            onCopy={() => {
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => {
+              copy(idea.content);
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
+            className={cn(
+              "absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
+              isSelected && "sm:opacity-100",
+            )}
           >
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className={cn(
-                "absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
-                isSelected && "sm:opacity-100",
-              )}
-            >
-              {copied ? (
-                <Check className="size-3.5" />
-              ) : (
-                <Copy className="size-3.5" />
-              )}
-              <span className="sr-only">Copy text</span>
-            </Button>
-          </CopyToClipboard>
+            {copied ? (
+              <Check className="size-3.5" />
+            ) : (
+              <Copy className="size-3.5" />
+            )}
+            <span className="sr-only">Copy text</span>
+          </Button>
         </TooltipTrigger>
         <TooltipContent side="left">
           <p>Copy text</p>
