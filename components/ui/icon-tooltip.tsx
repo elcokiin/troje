@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils"
 import type { RegisterableHotkey } from "@tanstack/react-hotkeys"
 
 interface IconTooltipProps {
-  icon: React.ElementType
+  icon: React.ReactNode
   label: string
   "aria-label"?: string
   shortcut?: RegisterableHotkey
@@ -19,14 +20,13 @@ interface IconTooltipProps {
   align?: "start" | "center" | "end"
   onClick?: () => void
   className?: string
-  iconClassName?: string
   size?: "icon" | "icon-sm" | "icon-lg"
   asChild?: boolean
   type?: "button" | "submit" | "reset"
 }
 
 export function IconTooltip({
-  icon: Icon,
+  icon,
   label,
   shortcut,
   "aria-label": ariaLabel,
@@ -34,7 +34,6 @@ export function IconTooltip({
   align,
   onClick,
   className,
-  iconClassName,
   size = "icon-sm",
   asChild,
   type,
@@ -44,12 +43,12 @@ export function IconTooltip({
       <Tooltip>
         <TooltipTrigger asChild>
           <span className={cn("flex items-center justify-center", className)} onClick={onClick}>
-            <Icon className={cn("size-3.5", iconClassName)} />
+            {icon}
             <span className="sr-only">{label}</span>
           </span>
         </TooltipTrigger>
-        <TooltipContent side={side} align={align}>
-          <p>{label}</p>
+        <TooltipContent side={side} align={align} className="flex items-center gap-1.5">
+          <span>{label}</span>
           {shortcut && <ShortcutKbd hotkey={shortcut} />}
         </TooltipContent>
       </Tooltip>
@@ -67,12 +66,12 @@ export function IconTooltip({
           onClick={onClick}
           aria-label={ariaLabel}
         >
-          <Icon className={cn("size-3.5", iconClassName)} />
+          {icon}
           <span className="sr-only">{label}</span>
         </Button>
       </TooltipTrigger>
-      <TooltipContent side={side} align={align}>
-        <p>{label}</p>
+      <TooltipContent side={side} align={align} className="flex items-center gap-1.5">
+        <span>{label}</span>
         {shortcut && <ShortcutKbd hotkey={shortcut} />}
       </TooltipContent>
     </Tooltip>

@@ -34,7 +34,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SHORTCUTS } from "@/lib/shortcuts";
-import { CARD_COLORS, formatTimeInTrash, formatRelativeDate } from "@/lib/ideas";
+import {
+  CARD_COLORS,
+  formatTimeInTrash,
+  formatRelativeDate,
+} from "@/lib/ideas";
 import type { IdeaCardProps } from "@/types/idea";
 
 export function IdeaCard({
@@ -92,28 +96,36 @@ export function IdeaCard({
     enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
-    conflictBehavior: "replace",
+    conflictBehavior: "allow",
   });
 
-  useHotkey(SHORTCUTS.copyIdea.hotkeys[0], () => {
-    copy(idea.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, {
-    enabled: isSelected,
-    ignoreInputs: true,
-    preventDefault: true,
-    conflictBehavior: "replace",
-  });
+  useHotkey(
+    SHORTCUTS.copyIdea.hotkeys[0],
+    () => {
+      copy(idea.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    },
+    {
+      enabled: isSelected,
+      ignoreInputs: true,
+      preventDefault: true,
+      conflictBehavior: "allow",
+    },
+  );
 
-  useHotkey(SHORTCUTS.togglePin.hotkeys[0], () => {
-    handlePinToggle();
-  }, {
-    enabled: isSelected,
-    ignoreInputs: true,
-    preventDefault: true,
-    conflictBehavior: "replace",
-  });
+  useHotkey(
+    SHORTCUTS.togglePin.hotkeys[0],
+    () => {
+      handlePinToggle();
+    },
+    {
+      enabled: isSelected,
+      ignoreInputs: true,
+      preventDefault: true,
+      conflictBehavior: "allow",
+    },
+  );
 
   const selectedColor = CARD_COLORS.find((c) => c.id === idea.background_color);
   const cardStyle = selectedColor?.color
@@ -133,7 +145,13 @@ export function IdeaCard({
       )}
     >
       <IconTooltip
-        icon={idea.pinned ? PinOff : Pin}
+        icon={
+          idea.pinned ? (
+            <PinOff className="size-3.5" />
+          ) : (
+            <Pin className="size-3.5" />
+          )
+        }
         label={idea.pinned ? "Unpin" : "Pin to top"}
         shortcut={SHORTCUTS.togglePin.hotkeys[0]}
         side="left"
@@ -146,7 +164,13 @@ export function IdeaCard({
       />
 
       <IconTooltip
-        icon={copied ? Check : Copy}
+        icon={
+          copied ? (
+            <Check className="size-3.5" />
+          ) : (
+            <Copy className="size-3.5" />
+          )
+        }
         label="Copy text"
         shortcut={SHORTCUTS.copyIdea.hotkeys[0]}
         side="left"
@@ -263,63 +287,63 @@ export function IdeaCard({
               Delete
             </DropdownMenuItem>
           )}
-          </DropdownMenuContent>
-      <CardContent className="pt-2 pl-4 pr-10">
-        <div className="space-y-3">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-words">
-            {idea.content}
-          </p>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
-              {idea.source === "telegram" ? (
-                <MessageSquare className="size-3" />
-              ) : (
-                <Globe className="size-3" />
-              )}
-              {showTrashInfo && idea.deleted_at ? (
-                <span className="text-destructive/70 flex items-center gap-1">
-                  <Trash2 className="size-3" />
-                  {formatTimeInTrash(idea.deleted_at)}
-                </span>
-              ) : (
-                <span>{formatRelativeDate(idea.created_at)}</span>
-              )}
-              {idea.pinned && <Pin className="size-3 text-primary" />}
-            </div>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className={cn(
-                  "size-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-1.5",
-                  isSelected && "opacity-100",
+        </DropdownMenuContent>
+        <CardContent className="pt-2 pl-4 pr-10">
+          <div className="space-y-3">
+            <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-words">
+              {idea.content}
+            </p>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                {idea.source === "telegram" ? (
+                  <MessageSquare className="size-3" />
+                ) : (
+                  <Globe className="size-3" />
                 )}
-              >
-                <IconTooltip
-                  icon={MoreHorizontal}
-                  label="More actions"
-                  shortcut={SHORTCUTS.openActions.hotkeys[0]}
-                  side="top"
-                  asChild
-                />
-              </Button>
-            </DropdownMenuTrigger>
-          </div>
-          {idea.tags && idea.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {idea.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="secondary"
-                  className="text-xs px-1.5 py-0"
+                {showTrashInfo && idea.deleted_at ? (
+                  <span className="text-destructive/70 flex items-center gap-1">
+                    <Trash2 className="size-3" />
+                    {formatTimeInTrash(idea.deleted_at)}
+                  </span>
+                ) : (
+                  <span>{formatRelativeDate(idea.created_at)}</span>
+                )}
+                {idea.pinned && <Pin className="size-3 text-primary" />}
+              </div>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className={cn(
+                    "size-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-1.5",
+                    isSelected && "opacity-100",
+                  )}
                 >
-                  {tag}
-                </Badge>
-              ))}
+                  <IconTooltip
+                    icon={<MoreHorizontal className="size-3.5" />}
+                    label="More actions"
+                    shortcut={SHORTCUTS.openActions.hotkeys[0]}
+                    side="top"
+                    asChild
+                  />
+                </Button>
+              </DropdownMenuTrigger>
             </div>
-          )}
-        </div>
-      </CardContent>
+            {idea.tags && idea.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {idea.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="text-xs px-1.5 py-0"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
       </DropdownMenu>
     </Card>
   );

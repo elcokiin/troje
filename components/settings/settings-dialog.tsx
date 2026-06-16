@@ -143,14 +143,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         <DialogHeader className="shrink-0 border-b px-6 py-4">
           <div className="flex items-start gap-3 pr-8">
             <IconTooltip
-              icon={isExpanded ? Minimize2 : Maximize2}
+              icon={isExpanded ? <Minimize2 /> : <Maximize2 />}
               label={isExpanded ? "Restore settings" : "Expand settings"}
-              aria-label={isExpanded ? "Restore settings dialog" : "Expand settings dialog"}
               shortcut={SHORTCUTS.expandSettings.hotkeys[0]}
+              side="top"
               onClick={() => setIsExpanded((prev) => !prev)}
+              aria-label={isExpanded ? "Restore settings dialog" : "Expand settings dialog"}
               className="-ml-2"
               size="icon"
-              type="button"
             />
             <div className="min-w-0">
               <DialogTitle className="text-xl">Settings</DialogTitle>
