@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { useHotkey } from "@tanstack/react-hotkeys"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect, useRef } from "react";
+import { useHotkey } from "@tanstack/react-hotkeys";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,22 +15,34 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuPortal,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Archive, Inbox, Trash2, MessageSquare, Globe, Pin, PinOff, Palette, Check, AlertTriangle } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { SHORTCUTS } from "@/lib/shortcuts"
+} from "@/components/ui/dropdown-menu";
+import {
+  MoreHorizontal,
+  Archive,
+  Inbox,
+  Trash2,
+  MessageSquare,
+  Globe,
+  Pin,
+  PinOff,
+  Palette,
+  Check,
+  AlertTriangle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { SHORTCUTS } from "@/lib/shortcuts";
 
 export interface Idea {
-  id: string
-  content: string
-  source: "web" | "telegram" | "api"
-  status: "inbox" | "archived" | "deleted"
-  tags: string[] | null
-  pinned: boolean
-  background_color: string | null
-  created_at: string
-  updated_at: string
-  deleted_at: string | null
+  id: string;
+  content: string;
+  source: "web" | "telegram" | "api";
+  status: "inbox" | "archived" | "deleted";
+  tags: string[] | null;
+  pinned: boolean;
+  background_color: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 const CARD_COLORS = [
@@ -46,16 +58,19 @@ const CARD_COLORS = [
   { id: "lavender", name: "Lavender", color: "oklch(0.80 0.08 290)" },
   { id: "blossom", name: "Blossom", color: "oklch(0.82 0.10 350)" },
   { id: "rose", name: "Rose", color: "oklch(0.78 0.12 10)" },
-]
+];
 
 interface IdeaCardProps {
-  idea: Idea
-  onStatusChange: (id: string, status: "inbox" | "archived" | "deleted") => void
-  onPinChange: (id: string, pinned: boolean) => void
-  onColorChange: (id: string, color: string | null) => void
-  onPermanentDelete?: (id: string) => void
-  isSelected?: boolean
-  showTrashInfo?: boolean
+  idea: Idea;
+  onStatusChange: (
+    id: string,
+    status: "inbox" | "archived" | "deleted",
+  ) => void;
+  onPinChange: (id: string, pinned: boolean) => void;
+  onColorChange: (id: string, color: string | null) => void;
+  onPermanentDelete?: (id: string) => void;
+  isSelected?: boolean;
+  showTrashInfo?: boolean;
 }
 
 export function IdeaCard({
@@ -65,86 +80,88 @@ export function IdeaCard({
   onColorChange,
   onPermanentDelete,
   isSelected = false,
-  showTrashInfo = false
+  showTrashInfo = false,
 }: IdeaCardProps) {
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleStatusChange = async (newStatus: "inbox" | "archived" | "deleted") => {
-    setIsUpdating(true)
-    await onStatusChange(idea.id, newStatus)
-    setIsUpdating(false)
-    setMenuOpen(false)
-  }
+  const handleStatusChange = async (
+    newStatus: "inbox" | "archived" | "deleted",
+  ) => {
+    setIsUpdating(true);
+    onStatusChange(idea.id, newStatus);
+    setIsUpdating(false);
+    setMenuOpen(false);
+  };
 
   const handlePinToggle = async () => {
-    setIsUpdating(true)
-    await onPinChange(idea.id, !idea.pinned)
-    setIsUpdating(false)
-    setMenuOpen(false)
-  }
+    setIsUpdating(true);
+    onPinChange(idea.id, !idea.pinned);
+    setIsUpdating(false);
+    setMenuOpen(false);
+  };
 
   const handleColorSelect = async (colorId: string | null) => {
-    setIsUpdating(true)
-    await onColorChange(idea.id, colorId)
-    setIsUpdating(false)
-  }
+    setIsUpdating(true);
+    onColorChange(idea.id, colorId);
+    setIsUpdating(false);
+  };
 
   const handlePermanentDelete = async () => {
     if (onPermanentDelete) {
-      setIsUpdating(true)
-      await onPermanentDelete(idea.id)
-      setIsUpdating(false)
-      setMenuOpen(false)
+      setIsUpdating(true);
+      onPermanentDelete(idea.id);
+      setIsUpdating(false);
+      setMenuOpen(false);
     }
-  }
+  };
 
   const formatTimeInTrash = (deletedAt: string | null) => {
-    if (!deletedAt) return null
-    const deleted = new Date(deletedAt)
-    const now = new Date()
-    const diffMs = now.getTime() - deleted.getTime()
-    const diffMinutes = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (!deletedAt) return null;
+    const deleted = new Date(deletedAt);
+    const now = new Date();
+    const diffMs = now.getTime() - deleted.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 1) return "Just deleted"
-    if (diffMinutes < 60) return `In trash for ${diffMinutes}m`
-    if (diffHours < 24) return `In trash for ${diffHours}h`
-    if (diffDays === 1) return "In trash for 1 day"
-    return `In trash for ${diffDays} days`
-  }
+    if (diffMinutes < 1) return "Just deleted";
+    if (diffMinutes < 60) return `In trash for ${diffMinutes}m`;
+    if (diffHours < 24) return `In trash for ${diffHours}h`;
+    if (diffDays === 1) return "In trash for 1 day";
+    return `In trash for ${diffDays} days`;
+  };
 
   useEffect(() => {
     if (isSelected && cardRef.current) {
-      cardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" })
+      cardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-  }, [isSelected])
+  }, [isSelected]);
 
   useHotkey(SHORTCUTS.openActions.hotkeys[0], () => setMenuOpen(true), {
     enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
-  })
+  });
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffHours < 1) return "Just now"
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-  }
+    if (diffHours < 1) return "Just now";
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
 
-  const selectedColor = CARD_COLORS.find(c => c.id === idea.background_color)
+  const selectedColor = CARD_COLORS.find((c) => c.id === idea.background_color);
   const cardStyle = selectedColor?.color
     ? { backgroundColor: selectedColor.color }
-    : undefined
+    : undefined;
 
   return (
     <Card
@@ -153,8 +170,9 @@ export function IdeaCard({
       className={cn(
         "group transition-all duration-200 hover:shadow-md break-inside-avoid relative",
         isUpdating && "opacity-50 pointer-events-none",
-        isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
-        idea.background_color && "border-transparent"
+        isSelected &&
+          "ring-2 ring-primary ring-offset-2 ring-offset-background",
+        idea.background_color && "border-transparent",
       )}
     >
       <Button
@@ -163,10 +181,14 @@ export function IdeaCard({
         onClick={handlePinToggle}
         className={cn(
           "absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
-          idea.pinned && "text-primary sm:opacity-100"
+          idea.pinned && "text-primary sm:opacity-100",
         )}
       >
-        {idea.pinned ? <PinOff className="size-3.5" /> : <Pin className="size-3.5" />}
+        {idea.pinned ? (
+          <PinOff className="size-3.5" />
+        ) : (
+          <Pin className="size-3.5" />
+        )}
         <span className="sr-only">{idea.pinned ? "Unpin" : "Pin"}</span>
       </Button>
 
@@ -177,7 +199,7 @@ export function IdeaCard({
             size="icon-sm"
             className={cn(
               "absolute top-2 right-10 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
-              isSelected && "sm:opacity-100"
+              isSelected && "sm:opacity-100",
             )}
           >
             <MoreHorizontal className="size-4" />
@@ -216,9 +238,14 @@ export function IdeaCard({
                         colorOption.id === null
                           ? "bg-card border-border"
                           : "border-transparent",
-                        idea.background_color === colorOption.id && "ring-2 ring-primary ring-offset-1"
+                        idea.background_color === colorOption.id &&
+                          "ring-2 ring-primary ring-offset-1",
                       )}
-                      style={colorOption.color ? { backgroundColor: colorOption.color } : undefined}
+                      style={
+                        colorOption.color
+                          ? { backgroundColor: colorOption.color }
+                          : undefined
+                      }
                       title={colorOption.name}
                     >
                       {idea.background_color === colorOption.id && (
@@ -266,9 +293,9 @@ export function IdeaCard({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CardContent className="pt-2 pr-10">
+      <CardContent className="pt-2 pl-4 pr-10">
         <div className="space-y-3">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-words">
             {idea.content}
           </p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -290,7 +317,11 @@ export function IdeaCard({
           {idea.tags && idea.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {idea.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
+                <Badge
+                  key={tag}
+                  variant="secondary"
+                  className="text-xs px-1.5 py-0"
+                >
                   {tag}
                 </Badge>
               ))}
@@ -299,5 +330,5 @@ export function IdeaCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -118,7 +118,7 @@ export function IdeasList({ status, onOpenCapture, active = true }: IdeasListPro
 
   if (isLoading) {
     return (
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-3 space-y-3">
+      <div className="columns-1 sm:columns-2 md:columns-3 gap-3 space-y-3">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <Skeleton key={i} className="h-24 w-full break-inside-avoid" />
         ))}
@@ -137,7 +137,7 @@ export function IdeasList({ status, onOpenCapture, active = true }: IdeasListPro
   const EmptyIcon = emptyState[status].icon
 
   const renderIdeas = (ideaList: Idea[], startIndex: number) => (
-    <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-3 space-y-3">
+    <div className="columns-1 sm:columns-2 md:columns-3 gap-3 space-y-3">
       {ideaList.map((idea, index) => (
         <IdeaCard
           key={idea.id}
