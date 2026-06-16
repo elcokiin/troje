@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 import useSWR from "swr"
 import { fetcher, ideasApi } from "@/lib/api-client"
-import type { Idea } from "@/components/ideas/idea-card"
+import type { Idea } from "@/types/idea"
 
 interface UseIdeasOptions {
   status: "inbox" | "archived" | "deleted"

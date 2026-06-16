@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { IdeaCard, type Idea } from "@/components/ideas/idea-card"
+import { IdeaCard } from "@/components/ideas/idea-card"
+import type { Idea } from "@/types/idea"
 import { QuickCapture } from "@/components/ideas/quick-capture"
 import {
   Empty,
