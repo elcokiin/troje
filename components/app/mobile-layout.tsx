@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Download, Pin, Settings } from "lucide-react";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { Button } from "@/components/ui/button";
 import { useIdeas } from "@/hooks/use-ideas";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
+import { cn } from "@/lib/utils";
 
 type TabValue = "inbox" | "archived" | "deleted";
 
@@ -26,6 +27,9 @@ export function MobileLayout({
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [topHidden, setTopHidden] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const prevScrollY = useRef(0);
 
   useEffect(() => {
     const media = window.matchMedia("(display-mode: standalone)");
@@ -54,6 +58,26 @@ export function MobileLayout({
     };
   }, []);
 
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollY = container.scrollTop;
+      const delta = scrollY - prevScrollY.current;
+
+      if (delta > 5 && scrollY > 150 && !captureOpen) {
+        setTopHidden(true);
+      } else if (delta < -5 || scrollY === 0) {
+        setTopHidden(false);
+      }
+      prevScrollY.current = scrollY;
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [captureOpen]);
+
   const showBanner =
     !isStandalone && deferredPrompt !== null && !bannerDismissed;
 
@@ -79,10 +103,13 @@ export function MobileLayout({
 
   return (
     <div className="md:hidden flex flex-col h-screen">
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
         <header className="px-4 h-14 border-b bg-background flex items-center justify-center">
           <div className="flex-1 border-t border-foreground/10" />
-          <span className="px-3 font-semibold text-base">Troje</span>
+          <div className="flex items-center gap-1.5 px-3">
+            <img src="/icon.svg" alt="Troje" className="size-7" />
+            <span className="text-2xl font-bold">Troje</span>
+          </div>
           <div className="flex-1 border-t border-foreground/10" />
         </header>
 
@@ -121,12 +148,15 @@ export function MobileLayout({
           value={activeTab}
           onValueChange={onTabChange}
           tabsListClassName="w-full grid grid-cols-3 rounded-none"
-          tabsListWrapperClassName="sticky top-0 z-40 bg-background"
+          tabsListWrapperClassName={cn(
+            "sticky top-0 z-40 bg-background transition-transform duration-300 ease-in-out will-change-transform",
+            topHidden && "-translate-y-full",
+          )}
           contentWrapperClassName="px-4 pt-4"
           showLabels={false}
           hideCaptureInbox
         >
-          <div className="px-4 pt-3 pb-0 space-y-3">
+          <div className="pb-0">
             <QuickCapture
               onCapture={handleCapture}
               isOpen={captureOpen}

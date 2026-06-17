@@ -56,8 +56,11 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
     return (
       <Button
         onClick={() => onOpenChange?.(true)}
-        className="w-full h-12 justify-start gap-3 text-muted-foreground font-normal border-dashed bg-card"
         variant="outline"
+        className={cn(
+          "w-full h-12 justify-start gap-3 text-muted-foreground font-normal border-dashed bg-card",
+          isMobile && "rounded-none border-x-0",
+        )}
       >
         <Plus className="size-4" />
         <span>Capture a new idea...</span>
@@ -67,7 +70,7 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
   }
 
   return (
-    <Card className="p-5">
+    <Card className={cn("p-5", isMobile && "rounded-none border-x-0")}>
       <div className="flex flex-col gap-4">
         <Textarea
           ref={textareaRef}
