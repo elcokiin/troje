@@ -22,9 +22,10 @@ interface IdeasListProps {
   status: "inbox" | "archived" | "deleted"
   onOpenCapture?: () => void
   active?: boolean
+  hideCapture?: boolean
 }
 
-export function IdeasList({ status, onOpenCapture, active = true }: IdeasListProps) {
+export function IdeasList({ status, onOpenCapture, active = true, hideCapture = false }: IdeasListProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [captureOpen, setCaptureOpen] = useState(false)
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav")
@@ -156,7 +157,7 @@ export function IdeasList({ status, onOpenCapture, active = true }: IdeasListPro
 
   return (
     <div className="space-y-6">
-      {status === "inbox" && (
+      {status === "inbox" && !hideCapture && (
         <QuickCapture
           onCapture={handleCapture}
           isOpen={captureOpen}

@@ -1,15 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useHotkeys, type UseHotkeyDefinition } from "@tanstack/react-hotkeys"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { IdeasList } from "@/components/ideas/ideas-list"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 import { ShortcutHelp } from "@/components/shortcuts/shortcut-help"
-import { Inbox, Archive, Trash2 } from "lucide-react"
+import { Inbox, Archive, Trash2, Search, Settings, Download } from "lucide-react"
 import { UserMenu } from "@/components/account/user-menu"
 import { SHORTCUTS } from "@/lib/shortcuts"
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences"
+import { QuickCapture } from "@/components/ideas/quick-capture"
+import { useIdeas } from "@/hooks/use-ideas"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Button } from "@/components/ui/button"
 
 type TabValue = "inbox" | "archived" | "deleted"
 
@@ -26,6 +30,58 @@ export function Dashboard({ user }: DashboardProps) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav")
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings")
+  const [captureOpen, setCaptureOpen] = useState(false)
+  const isMobile = useIsMobile()
+  const { create } = useIdeas({ status: "inbox" })
+
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null)
+  const [isStandalone, setIsStandalone] = useState(false)
+  const [bannerDismissed, setBannerDismissed] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia("(display-mode: standalone)")
+    setIsStandalone(media.matches)
+
+    const onStandaloneChange = (e: MediaQueryListEvent) => setIsStandalone(e.matches)
+    media.addEventListener("change", onStandaloneChange)
+
+    const onBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+    }
+    const onAppInstalled = () => {
+      setDeferredPrompt(null)
+      setIsStandalone(true)
+    }
+
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt)
+    window.addEventListener("appinstalled", onAppInstalled)
+
+    return () => {
+      media.removeEventListener("change", onStandaloneChange)
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt)
+      window.removeEventListener("appinstalled", onAppInstalled)
+    }
+  }, [])
+
+  const showBanner = !isStandalone && deferredPrompt !== null && !bannerDismissed
+
+  const handleInstall = useCallback(async () => {
+    if (!deferredPrompt) return
+    const promptEvent = deferredPrompt as any
+    promptEvent.prompt()
+    const choice = await promptEvent.userChoice
+    if (choice.outcome === "accepted") {
+      setDeferredPrompt(null)
+      setIsStandalone(true)
+    }
+    setBannerDismissed(true)
+  }, [deferredPrompt])
+
+  const handleCapture = useCallback(async (content: string) => {
+    await create(content)
+    setCaptureOpen(false)
+  }, [create])
 
   const hotkeys: Array<UseHotkeyDefinition> = [
     {
@@ -65,42 +121,123 @@ export function Dashboard({ user }: DashboardProps) {
     <div className="min-h-screen bg-background">
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <ShortcutHelp />
-      
-      {/* User menu in top right */}
-      <div className="fixed top-4 right-4 z-50">
-        <UserMenu user={user} />
+
+      {/* Desktop layout */}
+      <div className="hidden md:block">
+        <div className="fixed top-4 right-4 z-50">
+          <UserMenu user={user} />
+        </div>
+        <main className="container max-w-5xl mx-auto px-4 py-8 pt-16">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="space-y-6">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
+              <TabsTrigger value="inbox" className="gap-2">
+                <Inbox className="size-4" />
+                <span className="hidden sm:inline">Inbox</span>
+              </TabsTrigger>
+              <TabsTrigger value="archived" className="gap-2">
+                <Archive className="size-4" />
+                <span className="hidden sm:inline">Archived</span>
+              </TabsTrigger>
+              <TabsTrigger value="deleted" className="gap-2">
+                <Trash2 className="size-4" />
+                <span className="hidden sm:inline">Trash</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="inbox">
+              <IdeasList status="inbox" active={activeTab === "inbox"} />
+            </TabsContent>
+
+            <TabsContent value="archived">
+              <IdeasList status="archived" active={activeTab === "archived"} />
+            </TabsContent>
+
+            <TabsContent value="deleted">
+              <IdeasList status="deleted" active={activeTab === "deleted"} />
+            </TabsContent>
+          </Tabs>
+        </main>
       </div>
-      
-      <main className="container max-w-5xl mx-auto px-4 py-8 pt-16">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="space-y-6">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
-            <TabsTrigger value="inbox" className="gap-2">
-              <Inbox className="size-4" />
-              <span className="hidden sm:inline">Inbox</span>
-            </TabsTrigger>
-            <TabsTrigger value="archived" className="gap-2">
-              <Archive className="size-4" />
-              <span className="hidden sm:inline">Archived</span>
-            </TabsTrigger>
-            <TabsTrigger value="deleted" className="gap-2">
-              <Trash2 className="size-4" />
-              <span className="hidden sm:inline">Trash</span>
-            </TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="inbox">
-            <IdeasList status="inbox" active={activeTab === "inbox"} />
-          </TabsContent>
+      {/* Mobile PWA layout */}
+      <div className="md:hidden flex flex-col h-screen">
+        <div className="flex-1 overflow-y-auto">
+          <header className="flex items-center justify-between px-4 h-14 border-b bg-background">
+            <span className="font-semibold text-base">Troje</span>
+            <UserMenu user={user} />
+          </header>
 
-          <TabsContent value="archived">
-            <IdeasList status="archived" active={activeTab === "archived"} />
-          </TabsContent>
+          {showBanner && (
+            <div className="px-4 pt-3">
+              <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                <Download className="size-5 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">Install Troje</p>
+                  <p className="text-xs text-muted-foreground">Add to home screen for a native app experience</p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setBannerDismissed(true)}>
+                    Dismiss
+                  </Button>
+                  <Button size="sm" className="h-8 text-xs" onClick={handleInstall}>
+                    Install
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
-          <TabsContent value="deleted">
-            <IdeasList status="deleted" active={activeTab === "deleted"} />
-          </TabsContent>
-        </Tabs>
-      </main>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
+            <div className="sticky top-0 z-40 bg-background">
+              <div className="px-4 pt-3 pb-0 space-y-3">
+                <QuickCapture
+                  onCapture={handleCapture}
+                  isOpen={captureOpen}
+                  onOpenChange={setCaptureOpen}
+                  onClose={() => setCaptureOpen(false)}
+                />
+              </div>
+              <TabsList className="w-full grid grid-cols-3 rounded-none">
+                <TabsTrigger value="inbox">
+                  <Inbox className="size-4" />
+                </TabsTrigger>
+                <TabsTrigger value="archived">
+                  <Archive className="size-4" />
+                </TabsTrigger>
+                <TabsTrigger value="deleted">
+                  <Trash2 className="size-4" />
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <div className="px-4 pt-4">
+              <TabsContent value="inbox">
+                <IdeasList status="inbox" active={activeTab === "inbox"} hideCapture />
+              </TabsContent>
+              <TabsContent value="archived">
+                <IdeasList status="archived" active={activeTab === "archived"} />
+              </TabsContent>
+              <TabsContent value="deleted">
+                <IdeasList status="deleted" active={activeTab === "deleted"} />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+
+        <nav className="shrink-0 h-14 border-t bg-background flex items-center justify-around px-6">
+          <button className="flex flex-col items-center gap-0.5 text-muted-foreground">
+            <Search className="size-5" />
+            <span className="text-[10px] font-medium">Search</span>
+          </button>
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="flex flex-col items-center gap-0.5 text-muted-foreground"
+          >
+            <Settings className="size-5" />
+            <span className="text-[10px] font-medium">Settings</span>
+          </button>
+        </nav>
+      </div>
     </div>
   )
 }

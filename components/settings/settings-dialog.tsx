@@ -120,7 +120,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="fixed top-4 left-4 z-50 flex items-center gap-2">
+      <div className="fixed top-4 left-4 z-50 hidden md:flex items-center gap-2">
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon" className="relative overflow-visible">
             <Settings className="size-5" />
