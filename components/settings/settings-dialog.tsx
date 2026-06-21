@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -26,12 +25,11 @@ import {
   Moon,
   Palette,
   LogOut,
-  Settings,
   Smartphone,
   Sun,
   User,
 } from "lucide-react"
-import { ShortcutKbd, ShortcutKbdGroup } from "@/components/shortcuts/shortcut-kbd"
+import { ShortcutKbdGroup } from "@/components/shortcuts/shortcut-kbd"
 import { IconTooltip } from "@/components/ui/icon-tooltip"
 import { cn } from "@/lib/utils"
 import { ApiKeysManager } from "@/components/settings/api-keys-manager"
@@ -144,18 +142,6 @@ export function SettingsDialog({ open, onOpenChange, user }: SettingsDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="fixed top-4 left-4 z-50 hidden md:flex items-center gap-2">
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative overflow-visible">
-            <Settings className="size-5" />
-            <ShortcutKbd
-              hotkey={SHORTCUTS.settings.hotkeys[0]}
-              className="absolute -right-1 -top-1 h-4 min-w-4 rotate-12 px-1 text-[10px] shadow-sm"
-            />
-            <span className="sr-only">Settings</span>
-          </Button>
-        </DialogTrigger>
-      </div>
       <DialogContent
         className={cn(
           "flex flex-col gap-0 overflow-hidden p-0",

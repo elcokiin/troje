@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useHotkeys, type UseHotkeyDefinition } from "@tanstack/react-hotkeys";
 import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { ShortcutHelp } from "@/components/shortcuts/shortcut-help";
-import { UserMenu } from "@/components/account/user-menu";
 import { SHORTCUTS } from "@/lib/shortcuts";
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSearch } from "@/hooks/use-search";
 import { MobileLayout } from "@/components/app/mobile-layout";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
+import { BottomNav } from "@/components/app/bottom-nav";
 
 type TabValue = "inbox" | "archived" | "deleted";
 
@@ -27,6 +28,7 @@ export function Dashboard({ user }: DashboardProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav");
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings");
+  const search = useSearch();
 
   const hotkeys: Array<UseHotkeyDefinition> = [
     {
@@ -63,7 +65,7 @@ export function Dashboard({ user }: DashboardProps) {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} user={user} />
       <ShortcutHelp />
 
@@ -72,21 +74,24 @@ export function Dashboard({ user }: DashboardProps) {
           activeTab={activeTab}
           onTabChange={(v) => setActiveTab(v)}
           onSettingsOpen={() => setSettingsOpen(true)}
+          search={search}
         />
       ) : (
         <>
-          <div className="fixed top-4 right-4 z-50">
-            <UserMenu user={user} />
-          </div>
-          <main className="container max-w-5xl mx-auto px-4 py-8 pt-16">
+          <main className="flex-1 container max-w-5xl mx-auto px-4 py-8 pt-16">
             <IdeasTabs
               value={activeTab}
               onValueChange={setActiveTab}
+              search={search.debouncedSearch}
               tabsClassName="space-y-6"
               tabsListClassName="grid w-full max-w-md mx-auto grid-cols-3"
               triggerClassName="gap-2"
             />
           </main>
+          <BottomNav
+            onSettingsOpen={() => setSettingsOpen(true)}
+            search={search}
+          />
         </>
       )}
     </div>

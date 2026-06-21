@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearch } from "@/hooks/use-search";
-import { Pin, Search, Settings, X } from "lucide-react";
+import { X } from "lucide-react";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { useIdeas } from "@/hooks/use-ideas";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
+import { BottomNav, type SearchState } from "@/components/app/bottom-nav";
 import { cn } from "@/lib/utils";
 
 type TabValue = "inbox" | "archived" | "deleted";
@@ -14,12 +14,14 @@ interface MobileLayoutProps {
   activeTab: TabValue;
   onTabChange: (tab: TabValue) => void;
   onSettingsOpen: () => void;
+  search: SearchState;
 }
 
 export function MobileLayout({
   activeTab,
   onTabChange,
   onSettingsOpen,
+  search,
 }: MobileLayoutProps) {
   const { create } = useIdeas({ status: "inbox" });
 
@@ -93,17 +95,6 @@ export function MobileLayout({
     setBannerDismissed(true);
   }, [deferredPrompt]);
 
-  const {
-    searchMode,
-    setSearchMode,
-    searchQuery,
-    setSearchQuery,
-    debouncedSearch,
-    searchInputRef,
-    handleCloseSearch,
-    handleXClick,
-  } = useSearch();
-
   const handleCapture = useCallback(
     async (content: string) => {
       await create(content);
@@ -162,7 +153,7 @@ export function MobileLayout({
         <IdeasTabs
           value={activeTab}
           onValueChange={onTabChange}
-          search={debouncedSearch}
+          search={search.debouncedSearch}
           onOpenCapture={() => setCaptureOpen(true)}
           tabsListClassName="w-full grid grid-cols-3 rounded-none"
           tabsListWrapperClassName={cn(
@@ -184,51 +175,7 @@ export function MobileLayout({
         </IdeasTabs>
       </div>
 
-      <nav className="shrink-0 h-12 border-t bg-background flex items-stretch">
-        {searchMode ? (
-          <div className="flex-1 flex items-center gap-2 px-3">
-            <Search className="size-4 text-muted-foreground shrink-0" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find your ideas..."
-              className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
-              onKeyDown={(e) => {
-                if (e.key === "Escape") handleCloseSearch();
-              }}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button
-              onClick={handleXClick}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={searchQuery ? "Clear search" : "Close search"}
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        ) : (
-          <>
-            <button className="flex items-center justify-center text-muted-foreground px-4">
-              <Pin className="size-4" />
-            </button>
-            <button
-              onClick={() => setSearchMode(true)}
-              className="flex-1 flex items-center justify-center text-muted-foreground border-x border-dashed border-muted-foreground h-full"
-            >
-              <span className="text-xs font-bold tracking-widest">SEARCH</span>
-            </button>
-            <button
-              onClick={onSettingsOpen}
-              className="flex items-center justify-center text-muted-foreground px-4"
-            >
-              <Settings className="size-4" />
-            </button>
-          </>
-        )}
-      </nav>
+      <BottomNav onSettingsOpen={onSettingsOpen} search={search} />
     </div>
   );
 }
