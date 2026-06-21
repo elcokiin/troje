@@ -12,29 +12,40 @@ import type { RegisterableHotkey } from "@tanstack/react-hotkeys";
 
 type TabValue = "inbox" | "archived" | "deleted";
 
-function TooltippedTab({
-  label,
-  shortcut,
-  mobile,
-  children,
-}: {
+interface TabConfig {
+  value: TabValue
   label: string
+  icon: typeof Archive
   shortcut: RegisterableHotkey
-  mobile: boolean
-  children: ReactNode
-}) {
-  if (mobile) return <>{children}</>
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent side="bottom" className="flex items-center gap-1.5">
-        <span>{label}</span>
-        <ShortcutKbd hotkey={shortcut} />
-      </TooltipContent>
-    </Tooltip>
-  )
+  mobileClasses: string
 }
+
+const TABS: TabConfig[] = [
+  {
+    value: "archived",
+    label: "Archived",
+    icon: Archive,
+    shortcut: SHORTCUTS.archived.hotkeys[0],
+    mobileClasses:
+      "rounded-none border-0 border-r border-dashed border-muted-foreground data-[state=active]:border-l data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
+  },
+  {
+    value: "inbox",
+    label: "Inbox",
+    icon: Inbox,
+    shortcut: SHORTCUTS.inbox.hotkeys[0],
+    mobileClasses:
+      "rounded-none border-0 data-[state=active]:border-x data-[state=active]:border-dashed data-[state=active]:border-muted-foreground data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
+  },
+  {
+    value: "deleted",
+    label: "Trash",
+    icon: Trash2,
+    shortcut: SHORTCUTS.trash.hotkeys[0],
+    mobileClasses:
+      "rounded-none border-0 border-l border-dashed border-muted-foreground data-[state=active]:border-r data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
+  },
+]
 
 interface IdeasTabsProps {
   value: TabValue;
@@ -74,69 +85,42 @@ export function IdeasTabs({
         mobile && "flex w-full rounded-none h-10",
       )}
     >
-      <TooltippedTab label="Archived" shortcut={SHORTCUTS.archived.hotkeys[0]} mobile={mobile}>
-        <TabsTrigger
-          value="archived"
-          className={cn(
-            triggerClassName,
-            "group",
-            mobile &&
-              "rounded-none border-0 border-r border-dashed border-muted-foreground data-[state=active]:border-l data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
-          )}
-        >
-          <Archive
-            className={cn("size-4", mobile && "group-data-[state=active]:hidden")}
-          />
-          {showLabels && <span className="hidden sm:inline">Archived</span>}
-          {mobile && (
-            <span className="hidden group-data-[state=active]:inline uppercase text-xs font-bold tracking-widest">
-              Archived
-            </span>
-          )}
-        </TabsTrigger>
-      </TooltippedTab>
-      <TooltippedTab label="Inbox" shortcut={SHORTCUTS.inbox.hotkeys[0]} mobile={mobile}>
-        <TabsTrigger
-          value="inbox"
-          className={cn(
-            triggerClassName,
-            "group",
-            mobile &&
-              "rounded-none border-0 data-[state=active]:border-x data-[state=active]:border-dashed data-[state=active]:border-muted-foreground data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
-          )}
-        >
-          <Inbox
-            className={cn("size-4", mobile && "group-data-[state=active]:hidden")}
-          />
-          {showLabels && <span className="hidden sm:inline">Inbox</span>}
-          {mobile && (
-            <span className="hidden group-data-[state=active]:inline uppercase text-xs font-bold tracking-widest">
-              Inbox
-            </span>
-          )}
-        </TabsTrigger>
-      </TooltippedTab>
-      <TooltippedTab label="Trash" shortcut={SHORTCUTS.trash.hotkeys[0]} mobile={mobile}>
-        <TabsTrigger
-          value="deleted"
-          className={cn(
-            triggerClassName,
-            "group",
-            mobile &&
-              "rounded-none border-0 border-l border-dashed border-muted-foreground data-[state=active]:border-r data-[state=active]:flex-1 data-[state=inactive]:flex-none data-[state=inactive]:px-4",
-          )}
-        >
-          <Trash2
-            className={cn("size-4", mobile && "group-data-[state=active]:hidden")}
-          />
-          {showLabels && <span className="hidden sm:inline">Trash</span>}
-          {mobile && (
-            <span className="hidden group-data-[state=active]:inline uppercase text-xs font-bold tracking-widest">
-              Trash
-            </span>
-          )}
-        </TabsTrigger>
-      </TooltippedTab>
+      {TABS.map((tab) => {
+        const Icon = tab.icon
+        return (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className={cn(
+              triggerClassName,
+              "group",
+              mobile && tab.mobileClasses,
+            )}
+          >
+            {mobile ? (
+              <>
+                <Icon className="size-4 group-data-[state=active]:hidden" />
+                <span className="hidden group-data-[state=active]:inline uppercase text-xs font-bold tracking-widest">
+                  {tab.label}
+                </span>
+              </>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center gap-1.5 flex-1 self-stretch">
+                    <Icon className="size-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="flex items-center gap-1.5">
+                  <span>{tab.label}</span>
+                  <ShortcutKbd hotkey={tab.shortcut} />
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </TabsTrigger>
+        )
+      })}
     </TabsList>
   );
 
