@@ -26,6 +26,7 @@ interface IdeasTabsProps {
 export function IdeasTabs({
   value,
   onValueChange,
+  search,
   onOpenCapture,
   tabsClassName,
   tabsListClassName,

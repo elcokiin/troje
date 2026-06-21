@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearch } from "@/hooks/use-search";
 import { Pin, Search, Settings, X } from "lucide-react";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { useIdeas } from "@/hooks/use-ideas";
@@ -26,10 +27,6 @@ export function MobileLayout({
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [searchMode, setSearchMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const [topHidden, setTopHidden] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollY = useRef(0);
@@ -81,39 +78,6 @@ export function MobileLayout({
     return () => container.removeEventListener("scroll", handleScroll);
   }, [captureOpen]);
 
-  useEffect(() => {
-    const timer = setTimeout(
-      () => setDebouncedSearch(searchQuery),
-      300,
-    );
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    if (searchMode && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchMode]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      )
-        return;
-      const isSearchShortcut =
-        (e.key.toLowerCase() === "f" && (e.metaKey || e.ctrlKey)) ||
-        (e.key === "f" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey);
-      if (isSearchShortcut) {
-        e.preventDefault();
-        setSearchMode((prev) => !prev);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
   const showBanner =
     !isStandalone && deferredPrompt !== null && !bannerDismissed;
 
@@ -129,6 +93,17 @@ export function MobileLayout({
     setBannerDismissed(true);
   }, [deferredPrompt]);
 
+  const {
+    searchMode,
+    setSearchMode,
+    searchQuery,
+    setSearchQuery,
+    debouncedSearch,
+    searchInputRef,
+    handleCloseSearch,
+    handleXClick,
+  } = useSearch();
+
   const handleCapture = useCallback(
     async (content: string) => {
       await create(content);
@@ -136,20 +111,6 @@ export function MobileLayout({
     },
     [create],
   );
-
-  const handleCloseSearch = useCallback(() => {
-    setSearchMode(false);
-    setSearchQuery("");
-    setDebouncedSearch("");
-  }, []);
-
-  const handleXClick = useCallback(() => {
-    if (searchQuery) {
-      setSearchQuery("");
-    } else {
-      handleCloseSearch();
-    }
-  }, [searchQuery, handleCloseSearch]);
 
   return (
     <div className="flex flex-col h-screen">

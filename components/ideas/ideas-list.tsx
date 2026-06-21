@@ -26,7 +26,7 @@ interface IdeasListProps {
   hideCapture?: boolean
 }
 
-export function IdeasList({ status, onOpenCapture, active = true, hideCapture = false }: IdeasListProps) {
+export function IdeasList({ status, search, onOpenCapture, active = true, hideCapture = false }: IdeasListProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [captureOpen, setCaptureOpen] = useState(false)
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav")
