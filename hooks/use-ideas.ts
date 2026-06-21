@@ -7,12 +7,16 @@ import type { Idea } from "@/types/idea"
 
 interface UseIdeasOptions {
   status: "inbox" | "archived" | "deleted"
+  search?: string
   enabled?: boolean
 }
 
-export function useIdeas({ status, enabled = true }: UseIdeasOptions) {
+export function useIdeas({ status, search, enabled = true }: UseIdeasOptions) {
+  const params = new URLSearchParams({ status })
+  if (search) params.set("search", search)
+
   const { data, error, isLoading, mutate } = useSWR<{ ideas: Idea[] }>(
-    enabled ? `/api/ideas?status=${status}` : null,
+    enabled ? `/api/ideas?${params.toString()}` : null,
     fetcher,
     { refreshInterval: 5000 }
   )

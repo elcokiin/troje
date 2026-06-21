@@ -20,6 +20,7 @@ import { Inbox, Archive, Trash2, Pin } from "lucide-react"
 
 interface IdeasListProps {
   status: "inbox" | "archived" | "deleted"
+  search?: string
   onOpenCapture?: () => void
   active?: boolean
   hideCapture?: boolean
@@ -40,7 +41,7 @@ export function IdeasList({ status, onOpenCapture, active = true, hideCapture = 
     updatePin,
     updateColor,
     permanentDelete,
-  } = useIdeas({ status, enabled: active })
+  } = useIdeas({ status, search, enabled: active })
 
   const pinnedIdeas = ideas.filter(idea => idea.pinned)
   const unpinnedIdeas = ideas.filter(idea => !idea.pinned)

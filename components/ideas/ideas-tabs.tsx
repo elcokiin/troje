@@ -11,6 +11,7 @@ type TabValue = "inbox" | "archived" | "deleted";
 interface IdeasTabsProps {
   value: TabValue;
   onValueChange: (value: TabValue) => void;
+  search?: string;
   onOpenCapture?: () => void;
   tabsClassName?: string;
   tabsListClassName?: string;
@@ -109,6 +110,7 @@ export function IdeasTabs({
       <TabsContent value="inbox">
         <IdeasList
           status="inbox"
+          search={search}
           active={value === "inbox"}
           hideCapture={hideCaptureInbox}
           onOpenCapture={onOpenCapture}
@@ -116,11 +118,11 @@ export function IdeasTabs({
       </TabsContent>
 
       <TabsContent value="archived">
-        <IdeasList status="archived" active={value === "archived"} />
+        <IdeasList status="archived" search={search} active={value === "archived"} />
       </TabsContent>
 
       <TabsContent value="deleted">
-        <IdeasList status="deleted" active={value === "deleted"} />
+        <IdeasList status="deleted" search={search} active={value === "deleted"} />
       </TabsContent>
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Pin, Settings, X } from "lucide-react";
+import { Pin, Search, Settings, X } from "lucide-react";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { useIdeas } from "@/hooks/use-ideas";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
@@ -26,6 +26,10 @@ export function MobileLayout({
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [searchMode, setSearchMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [topHidden, setTopHidden] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollY = useRef(0);
@@ -77,6 +81,39 @@ export function MobileLayout({
     return () => container.removeEventListener("scroll", handleScroll);
   }, [captureOpen]);
 
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      300,
+    );
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchMode && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchMode]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+      const isSearchShortcut =
+        (e.key.toLowerCase() === "f" && (e.metaKey || e.ctrlKey)) ||
+        (e.key === "f" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey);
+      if (isSearchShortcut) {
+        e.preventDefault();
+        setSearchMode((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   const showBanner =
     !isStandalone && deferredPrompt !== null && !bannerDismissed;
 
@@ -99,6 +136,20 @@ export function MobileLayout({
     },
     [create],
   );
+
+  const handleCloseSearch = useCallback(() => {
+    setSearchMode(false);
+    setSearchQuery("");
+    setDebouncedSearch("");
+  }, []);
+
+  const handleXClick = useCallback(() => {
+    if (searchQuery) {
+      setSearchQuery("");
+    } else {
+      handleCloseSearch();
+    }
+  }, [searchQuery, handleCloseSearch]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -150,6 +201,7 @@ export function MobileLayout({
         <IdeasTabs
           value={activeTab}
           onValueChange={onTabChange}
+          search={debouncedSearch}
           onOpenCapture={() => setCaptureOpen(true)}
           tabsListClassName="w-full grid grid-cols-3 rounded-none"
           tabsListWrapperClassName={cn(
@@ -172,18 +224,49 @@ export function MobileLayout({
       </div>
 
       <nav className="shrink-0 h-12 border-t bg-background flex items-stretch">
-        <button className="flex items-center justify-center text-muted-foreground px-4">
-          <Pin className="size-4" />
-        </button>
-        <button className="flex-1 flex items-center justify-center text-muted-foreground border-x border-dashed border-muted-foreground h-full">
-          <span className="text-xs font-bold tracking-widest">SEARCH</span>
-        </button>
-        <button
-          onClick={onSettingsOpen}
-          className="flex items-center justify-center text-muted-foreground px-4"
-        >
-          <Settings className="size-4" />
-        </button>
+        {searchMode ? (
+          <div className="flex-1 flex items-center gap-2 px-3">
+            <Search className="size-4 text-muted-foreground shrink-0" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Find your ideas..."
+              className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+              onKeyDown={(e) => {
+                if (e.key === "Escape") handleCloseSearch();
+              }}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <button
+              onClick={handleXClick}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={searchQuery ? "Clear search" : "Close search"}
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <button className="flex items-center justify-center text-muted-foreground px-4">
+              <Pin className="size-4" />
+            </button>
+            <button
+              onClick={() => setSearchMode(true)}
+              className="flex-1 flex items-center justify-center text-muted-foreground border-x border-dashed border-muted-foreground h-full"
+            >
+              <span className="text-xs font-bold tracking-widest">SEARCH</span>
+            </button>
+            <button
+              onClick={onSettingsOpen}
+              className="flex items-center justify-center text-muted-foreground px-4"
+            >
+              <Settings className="size-4" />
+            </button>
+          </>
+        )}
       </nav>
     </div>
   );
