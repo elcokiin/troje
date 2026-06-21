@@ -49,6 +49,9 @@ Current source repository references:
   and `Mod+E` expand/restore behavior. Inspect in a disposable clone; do not
   commit the repository.
 
+- `https://github.com/basecamp/fizzy`: Fizzy by 37signals/Basecamp — helped
+  with visual design decisions, e.g. the bottom bar style.
+
 ### `notes/references/documents/`
 
 References to articles, specs, PDFs, technical docs, research notes, or other

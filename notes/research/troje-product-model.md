@@ -98,7 +98,7 @@ Through action execution, users can turn Troje into a control panel to launch pr
 
 ## Competitive Positioning
 
-Troje's greatest inspiration is **Google Keep**. From Keep it inherits the ultra-fast capture philosophy, one-tap voice notes, clean visual cards, and the obsession with reducing friction to near zero. But Troje aims to surpass Keep on two fronts: the post-capture action ecosystem (not just archiving, but transforming the idea into something executable) and contextual intelligence (location, time, proactive suggestions).
+Troje's greatest inspirations are **Google Keep** and **Fizzy** (by 37signals/Basecamp). From Keep it inherits the ultra-fast capture philosophy, one-tap voice notes, clean visual cards, and the obsession with reducing friction to near zero. From Fizzy it takes the visual design sensibility: minimal card layout, restrained typography, generous whitespace, and a calm, uncluttered aesthetic. But Troje aims to surpass both on two fronts: the post-capture action ecosystem (not just archiving, but transforming the idea into something executable) and contextual intelligence (location, time, proactive suggestions).
 
 Troje also coexists with products like Apple Notes, Evernote, Todoist, and Notion, but should not copy any of them directly.
 
