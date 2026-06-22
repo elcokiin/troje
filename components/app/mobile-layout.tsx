@@ -13,6 +13,7 @@ type TabValue = "inbox" | "archived" | "deleted";
 interface MobileLayoutProps {
   activeTab: TabValue;
   onTabChange: (tab: TabValue) => void;
+  onPinnedToggle: () => void;
   onSettingsOpen: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -23,6 +24,7 @@ interface MobileLayoutProps {
 export function MobileLayout({
   activeTab,
   onTabChange,
+  onPinnedToggle,
   onSettingsOpen,
   searchQuery,
   setSearchQuery,
@@ -181,7 +183,7 @@ export function MobileLayout({
         </IdeasTabs>
       </div>
 
-      <BottomNav onSettingsOpen={onSettingsOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleClearSearch={handleClearSearch} />
+      <BottomNav onPinnedToggle={onPinnedToggle} onSettingsOpen={onSettingsOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleClearSearch={handleClearSearch} />
     </div>
   );
 }

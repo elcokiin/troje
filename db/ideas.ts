@@ -6,16 +6,22 @@ export async function findIdeas({
   userId,
   status,
   search,
+  pinned,
 }: {
   userId: string
   status: NonNullable<Idea["status"]>
   search?: string | null
+  pinned?: boolean
 }) {
   const db = getDb()
   const filters = [
     eq(ideas.user_id, userId),
     eq(ideas.status, status),
   ]
+
+  if (pinned) {
+    filters.push(eq(ideas.pinned, true))
+  }
 
   if (search) {
     filters.push(ilike(ideas.content, `%${search}%`))
@@ -26,6 +32,23 @@ export async function findIdeas({
     .from(ideas)
     .where(and(...filters))
     .orderBy(desc(ideas.pinned), desc(ideas.created_at))
+}
+
+export async function findPinnedIdeas({
+  userId,
+}: {
+  userId: string
+}) {
+  const db = getDb()
+  return db
+    .select()
+    .from(ideas)
+    .where(and(
+      eq(ideas.user_id, userId),
+      eq(ideas.pinned, true),
+      eq(ideas.status, "inbox"),
+    ))
+    .orderBy(desc(ideas.created_at))
 }
 
 export async function findIdeaById({

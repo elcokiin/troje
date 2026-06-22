@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
 import { getUserIdFromApiKey } from "@/lib/api-keys"
-import { createIdea, findIdeas } from "@/db/ideas"
+import { createIdea, findIdeas, findPinnedIdeas } from "@/db/ideas"
 
 async function getUserIdFromAuthorizationHeader(request: NextRequest): Promise<string | null> {
   const authHeader = request.headers.get("authorization")
@@ -38,12 +38,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status") || "inbox"
     const search = searchParams.get("search")
-    
-    const ideas = await findIdeas({
-      userId,
-      status: status as "inbox" | "archived" | "deleted",
-      search,
-    })
+    const pinned = searchParams.get("pinned") === "true"
+
+    let ideas
+    if (pinned) {
+      ideas = await findPinnedIdeas({ userId })
+    } else {
+      ideas = await findIdeas({
+        userId,
+        status: status as "inbox" | "archived" | "deleted",
+        search,
+      })
+    }
     
     return NextResponse.json({ ideas })
   } catch (error) {

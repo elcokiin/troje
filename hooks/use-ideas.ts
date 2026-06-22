@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import useSWR from "swr"
+import useSWR, { mutate as globalMutate } from "swr"
 import { fetcher, ideasApi } from "@/lib/api-client"
 import type { Idea } from "@/types/idea"
 
@@ -63,6 +63,7 @@ export function useIdeas({ status, search, enabled = true }: UseIdeasOptions) {
 
     await ideasApi.update(id, { pinned })
     mutate()
+    globalMutate("/api/ideas?pinned=true")
   }, [mutate])
 
   const updateColor = useCallback(

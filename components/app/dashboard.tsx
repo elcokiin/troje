@@ -14,6 +14,7 @@ import { IdeasTabs } from "@/components/ideas/ideas-tabs";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { ideasApi } from "@/lib/api-client";
 import { BottomNav } from "@/components/app/bottom-nav";
+import { PinnedTray } from "@/components/ideas/pinned-tray";
 
 type TabValue = "inbox" | "archived" | "deleted";
 
@@ -30,6 +31,7 @@ export function Dashboard({ user }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<TabValue>("inbox");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
+  const [pinnedTrayOpen, setPinnedTrayOpen] = useState(false);
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav");
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings");
   const { searchQuery, setSearchQuery, debouncedSearch, handleClearSearch } = useSearch();
@@ -90,6 +92,7 @@ export function Dashboard({ user }: DashboardProps) {
         <MobileLayout
           activeTab={activeTab}
           onTabChange={(v) => setActiveTab(v)}
+          onPinnedToggle={() => setPinnedTrayOpen((prev) => !prev)}
           onSettingsOpen={() => setSettingsOpen(true)}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -119,6 +122,7 @@ export function Dashboard({ user }: DashboardProps) {
           </main>
           <div className="fixed bottom-0 left-0 right-0 z-40">
             <BottomNav
+              onPinnedToggle={() => setPinnedTrayOpen((prev) => !prev)}
               onSettingsOpen={() => setSettingsOpen(true)}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -127,6 +131,7 @@ export function Dashboard({ user }: DashboardProps) {
           </div>
         </>
       )}
+      <PinnedTray isOpen={pinnedTrayOpen} onOpenChange={setPinnedTrayOpen} />
     </div>
   );
 }

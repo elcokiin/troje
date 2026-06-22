@@ -14,13 +14,14 @@ export interface SearchState {
 }
 
 interface BottomNavProps {
+  onPinnedToggle: () => void;
   onSettingsOpen: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   handleClearSearch: () => void;
 }
 
-export function BottomNav({ onSettingsOpen, searchQuery, setSearchQuery, handleClearSearch }: BottomNavProps) {
+export function BottomNav({ onPinnedToggle, onSettingsOpen, searchQuery, setSearchQuery, handleClearSearch }: BottomNavProps) {
   const isMobile = useIsMobile();
   const [showShortcutHints] = useShortcutPreference("troje-shortcut-hints");
   const [searchMode, setSearchMode] = useState(false);
@@ -85,12 +86,15 @@ export function BottomNav({ onSettingsOpen, searchQuery, setSearchQuery, handleC
         </div>
       ) : isMobile ? (
         <>
-          <button className="flex items-center justify-center text-muted-foreground px-4">
+          <button
+            onClick={onPinnedToggle}
+            className="flex items-center justify-center text-muted-foreground px-4"
+          >
             <Pin className="size-4" />
           </button>
           <button
             onClick={() => setSearchMode(true)}
-            className="flex-1 flex items-center justify-center text-muted-foreground border-x border-dashed border-muted-foreground h-full"
+            className="flex-1 flex items-center justify-center text-muted-foreground h-full"
           >
             <span className="text-xs font-bold tracking-widest">SEARCH</span>
           </button>
@@ -103,7 +107,10 @@ export function BottomNav({ onSettingsOpen, searchQuery, setSearchQuery, handleC
         </>
       ) : (
         <>
-          <button className="flex-1 flex items-center justify-center gap-1.5 text-muted-foreground h-full">
+          <button
+            onClick={onPinnedToggle}
+            className="flex-1 flex items-center justify-center gap-1.5 text-muted-foreground h-full"
+          >
             <Pin className="size-4" />
             <span className="text-sm font-medium">Pin</span>
             {showShortcutHints && <Kbd>P</Kbd>}
