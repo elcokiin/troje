@@ -3,8 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { X } from "lucide-react";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
+import { QuickCapture } from "@/components/ideas/quick-capture";
 import { BottomNav } from "@/components/app/bottom-nav";
 import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
+import { useIdeas } from "@/hooks/use-ideas";
 
 function isBeforeInstallPromptEvent(e: Event): e is BeforeInstallPromptEvent {
   return "prompt" in e;
@@ -17,6 +20,8 @@ export function MobileLayout() {
   const [topHidden, setTopHidden] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollY = useRef(0);
+  const captureOpen = useUIStore((s) => s.captureOpen);
+  const setCaptureOpen = useUIStore((s) => s.setCaptureOpen);
 
   useEffect(() => {
     const media = window.matchMedia("(display-mode: standalone)");
@@ -53,7 +58,7 @@ export function MobileLayout() {
       const scrollY = container.scrollTop;
       const delta = scrollY - prevScrollY.current;
 
-      if (delta > 5 && scrollY > 150) {
+      if (delta > 5 && scrollY > 150 && !captureOpen) {
         setTopHidden(true);
       } else if (delta < -5 || scrollY === 0) {
         setTopHidden(false);
@@ -63,7 +68,7 @@ export function MobileLayout() {
 
     container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [captureOpen]);
 
   const showBanner =
     !isStandalone && deferredPrompt !== null && !bannerDismissed;
@@ -79,6 +84,12 @@ export function MobileLayout() {
     }
     setBannerDismissed(true);
   }, [deferredPrompt]);
+
+  const { create } = useIdeas({ status: "inbox" });
+  const handleCapture = useCallback(async (content: string) => {
+    await create(content);
+    setCaptureOpen(false);
+  }, [create, setCaptureOpen]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -136,7 +147,15 @@ export function MobileLayout() {
           contentWrapperClassName="px-4 pt-4"
           showLabels={false}
           hideCaptureInbox
-        />
+        >
+          <div className="pb-0">
+            <QuickCapture
+              onCapture={handleCapture}
+              isOpen={captureOpen}
+              onOpenChange={setCaptureOpen}
+            />
+          </div>
+        </IdeasTabs>
       </div>
 
       <BottomNav />

@@ -30,6 +30,8 @@ export function Dashboard({ user }: DashboardProps) {
   const setActiveTab = useUIStore((s) => s.setActiveTab);
   const settingsOpen = useUIStore((s) => s.settingsOpen);
   const setSettingsOpen = useUIStore((s) => s.setSettingsOpen);
+  const captureOpen = useUIStore((s) => s.captureOpen);
+  const setCaptureOpen = useUIStore((s) => s.setCaptureOpen);
   const searchMode = useSearchStore((s) => s.searchMode);
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav");
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings");
@@ -89,6 +91,8 @@ export function Dashboard({ user }: DashboardProps) {
           <main className="flex-1 container max-w-5xl mx-auto px-4 pt-6 pb-12">
             <QuickCapture
               onCapture={handleCapture}
+              isOpen={captureOpen}
+              onOpenChange={setCaptureOpen}
             />
             <div className="mt-1">
               <IdeasTabs
