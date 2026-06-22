@@ -1,39 +1,61 @@
 "use client";
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Pin, Search, Settings, X } from "lucide-react";
-import type { RefObject } from "react";
 import { Kbd } from "@/components/ui/kbd";
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface SearchState {
-  searchMode: boolean;
-  setSearchMode: (mode: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   debouncedSearch: string;
-  searchInputRef: RefObject<HTMLInputElement | null>;
-  handleCloseSearch: () => void;
-  handleXClick: () => void;
+  handleClearSearch: () => void;
 }
 
 interface BottomNavProps {
   onSettingsOpen: () => void;
-  search: SearchState;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  handleClearSearch: () => void;
 }
 
-export function BottomNav({ onSettingsOpen, search }: BottomNavProps) {
+export function BottomNav({ onSettingsOpen, searchQuery, setSearchQuery, handleClearSearch }: BottomNavProps) {
   const isMobile = useIsMobile();
   const [showShortcutHints] = useShortcutPreference("troje-shortcut-hints");
-  const {
-    searchMode,
-    setSearchMode,
-    searchQuery,
-    setSearchQuery,
-    searchInputRef,
-    handleCloseSearch,
-    handleXClick,
-  } = search;
+  const [searchMode, setSearchMode] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.key === "f" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+        e.preventDefault()
+        setSearchMode((prev) => !prev)
+      }
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [])
+
+  useEffect(() => {
+    if (searchMode && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [searchMode])
+
+  const handleCloseSearch = useCallback(() => {
+    setSearchMode(false)
+    handleClearSearch()
+  }, [handleClearSearch])
+
+  const handleXClick = useCallback(() => {
+    if (searchQuery) {
+      setSearchQuery("")
+    } else {
+      handleCloseSearch()
+    }
+  }, [searchQuery, setSearchQuery, handleCloseSearch])
 
   return (
     <nav className="shrink-0 h-12 border-t bg-background flex items-stretch">

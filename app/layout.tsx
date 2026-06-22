@@ -8,8 +8,8 @@ import { HotkeysRootProvider } from '@/components/providers/hotkeys-root-provide
 import { DevtoolsClient } from '@/components/providers/devtools-client'
 import './globals.css'
 
-const _inter = Inter({ subsets: ["latin"] });
-const _jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: 'Troje - Capture Ideas Anywhere',
@@ -51,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
       <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased">
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <SessionProvider>
           <ThemeProvider>
             <HotkeysRootProvider>

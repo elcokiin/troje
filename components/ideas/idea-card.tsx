@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import copy from "copy-to-clipboard";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,13 +98,15 @@ export function IdeaCard({
     conflictBehavior: "allow",
   });
 
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(idea.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [idea.content]);
+
   useHotkey(
     SHORTCUTS.copyIdea.hotkeys[0],
-    () => {
-      copy(idea.content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    },
+    handleCopy,
     {
       enabled: isSelected,
       ignoreInputs: true,
@@ -174,11 +175,7 @@ export function IdeaCard({
         label="Copy text"
         shortcut={SHORTCUTS.copyIdea.hotkeys[0]}
         side="left"
-        onClick={() => {
-          copy(idea.content);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        }}
+        onClick={handleCopy}
         className={cn(
           "absolute top-2 right-2 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity",
           isSelected && "sm:opacity-100",
@@ -240,13 +237,7 @@ export function IdeaCard({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onClick={() => {
-              copy(idea.content);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            }}
-          >
+          <DropdownMenuItem onClick={handleCopy}>
             {copied ? (
               <Check className="size-4 mr-2" />
             ) : (

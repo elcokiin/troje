@@ -18,7 +18,11 @@ export function useIdeas({ status, search, enabled = true }: UseIdeasOptions) {
   const { data, error, isLoading, mutate } = useSWR<{ ideas: Idea[] }>(
     enabled ? `/api/ideas?${params.toString()}` : null,
     fetcher,
-    { refreshInterval: 5000 }
+    {
+      refreshInterval: 30_000,
+      revalidateOnFocus: true,
+      focusThrottleInterval: 10_000,
+    }
   )
 
   const create = useCallback(async (content: string) => {

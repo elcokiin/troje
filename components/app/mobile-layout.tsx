@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { QuickCapture } from "@/components/ideas/quick-capture";
 import { useIdeas } from "@/hooks/use-ideas";
 import { IdeasTabs } from "@/components/ideas/ideas-tabs";
-import { BottomNav, type SearchState } from "@/components/app/bottom-nav";
+import { BottomNav } from "@/components/app/bottom-nav";
 import { cn } from "@/lib/utils";
 
 type TabValue = "inbox" | "archived" | "deleted";
@@ -14,14 +14,20 @@ interface MobileLayoutProps {
   activeTab: TabValue;
   onTabChange: (tab: TabValue) => void;
   onSettingsOpen: () => void;
-  search: SearchState;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  debouncedSearch: string;
+  handleClearSearch: () => void;
 }
 
 export function MobileLayout({
   activeTab,
   onTabChange,
   onSettingsOpen,
-  search,
+  searchQuery,
+  setSearchQuery,
+  debouncedSearch,
+  handleClearSearch,
 }: MobileLayoutProps) {
   const { create } = useIdeas({ status: "inbox" });
 
@@ -153,7 +159,7 @@ export function MobileLayout({
         <IdeasTabs
           value={activeTab}
           onValueChange={onTabChange}
-          search={search.debouncedSearch}
+          search={debouncedSearch}
           onOpenCapture={() => setCaptureOpen(true)}
           tabsListClassName="w-full grid grid-cols-3 rounded-none"
           tabsListWrapperClassName={cn(
@@ -175,7 +181,7 @@ export function MobileLayout({
         </IdeasTabs>
       </div>
 
-      <BottomNav onSettingsOpen={onSettingsOpen} search={search} />
+      <BottomNav onSettingsOpen={onSettingsOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleClearSearch={handleClearSearch} />
     </div>
   );
 }

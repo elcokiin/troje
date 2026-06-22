@@ -28,7 +28,7 @@ export function Dashboard({ user }: DashboardProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav");
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings");
-  const search = useSearch();
+  const { searchQuery, setSearchQuery, debouncedSearch, handleClearSearch } = useSearch();
 
   const hotkeys: Array<UseHotkeyDefinition> = [
     {
@@ -74,7 +74,10 @@ export function Dashboard({ user }: DashboardProps) {
           activeTab={activeTab}
           onTabChange={(v) => setActiveTab(v)}
           onSettingsOpen={() => setSettingsOpen(true)}
-          search={search}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          debouncedSearch={debouncedSearch}
+          handleClearSearch={handleClearSearch}
         />
       ) : (
         <>
@@ -82,7 +85,7 @@ export function Dashboard({ user }: DashboardProps) {
             <IdeasTabs
               value={activeTab}
               onValueChange={setActiveTab}
-              search={search.debouncedSearch}
+              search={debouncedSearch}
               tabsClassName="space-y-6"
               tabsListClassName="grid w-full max-w-md mx-auto grid-cols-3"
               triggerClassName="gap-2"
@@ -91,7 +94,9 @@ export function Dashboard({ user }: DashboardProps) {
           <div className="fixed bottom-0 left-0 right-0 z-40">
             <BottomNav
               onSettingsOpen={() => setSettingsOpen(true)}
-              search={search}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              handleClearSearch={handleClearSearch}
             />
           </div>
         </>
