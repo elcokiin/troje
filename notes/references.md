@@ -50,7 +50,35 @@ Current source repository references:
   commit the repository.
 
 - `https://github.com/basecamp/fizzy`: Fizzy by 37signals/Basecamp — helped
-  with visual design decisions, e.g. the bottom bar style.
+  with visual design decisions, e.g. the bottom bar style. Cloned to
+  `notes/references/source-repositories/fizzy/` and gitignored.
+  
+  **Pinning analysis (June 2026):**
+  Fizzy uses a separate `pins` join table (`card_id` + `user_id`), NOT a boolean
+  column on `cards`. Pins are **fully separated** from the main card grid — they
+  live in a persistent bottom tray/drawer opened by a toggle button with `P`
+  keyboard shortcut. Ordering is `created_at DESC` (most recently pinned first),
+  no position/reorder column. The pin button on each card is lazy-loaded via
+  Turbo Frame. Pins auto-clean when users lose board access.
+  
+  **Key differences from Troje:**
+  - Fizzy: per-user pins via join table | Troje: global `pinned` boolean on idea
+  - Fizzy: completely separate UI (bottom tray) | Troje: inline sections
+  - Fizzy: reverse chronological order | Troje: no sort order
+  - Fizzy: max ~10 visible items | Troje: no limit
+  - Fizzy: Hotwire real-time updates | Troje: no real-time pin updates
+  
+  Relevant files in clone:
+  - `app/models/pin.rb` — model with `ordered` scope
+  - `app/models/card/pinnable.rb` — `pin_by`/`unpin_by`/`pinned_by?` concern
+  - `app/controllers/cards/pins_controller.rb` — 3 actions (show/create/destroy)
+  - `app/controllers/my/pins_controller.rb` — index for tray (limit 20/100)
+  - `app/views/my/pins/_tray.html.erb` — dialog with Turbo Frame + keyboard nav
+  - `app/views/my/pins/_pin.html.erb` — card preview + unpin button
+  - `app/views/cards/pins/_pin_button.html.erb` — lazy-loaded toggle button
+  - `app/assets/stylesheets/trays.css` — `.tray__item--pin` styling (lines 366-424)
+  - `config/routes.rb` — line 90 (card pin resource), line 186 (my pins collection)
+  - `db/schema.rb` — pins table (lines 422-432)
 
 ### `notes/references/documents/`
 
