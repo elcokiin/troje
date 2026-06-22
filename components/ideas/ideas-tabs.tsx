@@ -59,6 +59,7 @@ interface IdeasTabsProps {
   contentWrapperClassName?: string;
   showLabels?: boolean;
   hideCaptureInbox?: boolean;
+  focusIdeaId?: string | null;
   children?: ReactNode;
 }
 
@@ -74,6 +75,7 @@ export function IdeasTabs({
   contentWrapperClassName,
   showLabels = true,
   hideCaptureInbox = false,
+  focusIdeaId,
   children,
 }: IdeasTabsProps) {
   const mobile = !showLabels;
@@ -128,15 +130,16 @@ export function IdeasTabs({
           active={value === "inbox"}
           hideCapture={hideCaptureInbox}
           onOpenCapture={onOpenCapture}
+          focusIdeaId={focusIdeaId}
         />
       </TabsContent>
 
       <TabsContent value="archived">
-        <IdeasList status="archived" search={search} active={value === "archived"} />
+        <IdeasList status="archived" search={search} active={value === "archived"} focusIdeaId={focusIdeaId} />
       </TabsContent>
 
       <TabsContent value="deleted">
-        <IdeasList status="deleted" search={search} active={value === "deleted"} />
+        <IdeasList status="deleted" search={search} active={value === "deleted"} focusIdeaId={focusIdeaId} />
       </TabsContent>
     </>
   );

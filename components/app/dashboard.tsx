@@ -32,6 +32,7 @@ export function Dashboard({ user }: DashboardProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
   const [pinnedTrayOpen, setPinnedTrayOpen] = useState(false);
+  const [focusIdeaId, setFocusIdeaId] = useState<string | null>(null);
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav");
   const [settingsKeyEnabled] = useShortcutPreference("troje-shortcut-settings");
   const { searchQuery, setSearchQuery, debouncedSearch, handleClearSearch } = useSearch();
@@ -77,6 +78,12 @@ export function Dashboard({ user }: DashboardProps) {
     setCaptureOpen(true)
   }, [])
 
+  const handleFocusIdea = useCallback((id: string) => {
+    setFocusIdeaId(id)
+    setActiveTab("inbox")
+    setPinnedTrayOpen(false)
+  }, [])
+
   useHotkeys(hotkeys, {
     ignoreInputs: true,
     preventDefault: true,
@@ -98,6 +105,7 @@ export function Dashboard({ user }: DashboardProps) {
           setSearchQuery={setSearchQuery}
           debouncedSearch={debouncedSearch}
           handleClearSearch={handleClearSearch}
+          focusIdeaId={focusIdeaId}
         />
       ) : (
         <>
@@ -117,6 +125,7 @@ export function Dashboard({ user }: DashboardProps) {
                 tabsClassName="space-y-6"
                 tabsListClassName="grid w-full max-w-md mx-auto grid-cols-3 bg-transparent p-0 rounded-none"
                 triggerClassName="gap-2 rounded-none border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none h-auto py-2"
+                focusIdeaId={focusIdeaId}
               />
             </div>
           </main>
@@ -131,7 +140,7 @@ export function Dashboard({ user }: DashboardProps) {
           </div>
         </>
       )}
-      <PinnedTray isOpen={pinnedTrayOpen} onOpenChange={setPinnedTrayOpen} />
+      <PinnedTray isOpen={pinnedTrayOpen} onOpenChange={setPinnedTrayOpen} onFocusIdea={handleFocusIdea} />
     </div>
   );
 }

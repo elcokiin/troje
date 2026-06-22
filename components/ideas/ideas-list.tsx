@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { IdeaCard } from "@/components/ideas/idea-card"
 import type { Idea } from "@/types/idea"
 import { QuickCapture } from "@/components/ideas/quick-capture"
@@ -24,9 +24,10 @@ interface IdeasListProps {
   onOpenCapture?: () => void
   active?: boolean
   hideCapture?: boolean
+  focusIdeaId?: string | null
 }
 
-export function IdeasList({ status, search, onOpenCapture, active = true, hideCapture = false }: IdeasListProps) {
+export function IdeasList({ status, search, onOpenCapture, active = true, hideCapture = false, focusIdeaId }: IdeasListProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [captureOpen, setCaptureOpen] = useState(false)
   const [keyboardEnabled] = useShortcutPreference("troje-keyboard-nav")
@@ -48,6 +49,17 @@ export function IdeasList({ status, search, onOpenCapture, active = true, hideCa
       onOpenCapture?.()
     }
   }, [status, onOpenCapture])
+
+  const prevFocusIdeaIdRef = useRef(focusIdeaId)
+
+  useEffect(() => {
+    if (!focusIdeaId || focusIdeaId === prevFocusIdeaIdRef.current) return
+    prevFocusIdeaIdRef.current = focusIdeaId
+    const index = ideas.findIndex((idea) => idea.id === focusIdeaId)
+    if (index !== -1) {
+      setSelectedIndex(index)
+    }
+  }, [focusIdeaId, ideas])
 
   useKeyboardNavigation({
     itemCount: ideas.length,

@@ -19,6 +19,7 @@ interface MobileLayoutProps {
   setSearchQuery: (query: string) => void;
   debouncedSearch: string;
   handleClearSearch: () => void;
+  focusIdeaId?: string | null;
 }
 
 export function MobileLayout({
@@ -30,6 +31,7 @@ export function MobileLayout({
   setSearchQuery,
   debouncedSearch,
   handleClearSearch,
+  focusIdeaId,
 }: MobileLayoutProps) {
   const { create } = useIdeas({ status: "inbox" });
 
@@ -171,6 +173,7 @@ export function MobileLayout({
           contentWrapperClassName="px-4 pt-4"
           showLabels={false}
           hideCaptureInbox
+          focusIdeaId={focusIdeaId}
         >
           <div className="pb-0">
             <QuickCapture

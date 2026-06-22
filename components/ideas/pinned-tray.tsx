@@ -14,23 +14,30 @@ import { cn } from "@/lib/utils"
 interface PinnedTrayProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
+  onFocusIdea?: (id: string) => void
 }
 
 function PinnedCard({
   idea,
   index,
   onUnpin,
+  onFocus,
 }: {
   idea: { id: string; content: string; created_at: string }
   index: number
   onUnpin: (id: string) => void
+  onFocus?: (id: string) => void
 }) {
   const pinnedDate = new Date(idea.created_at).toLocaleDateString()
 
   return (
     <div
-      className="pinned-tray-card group relative min-h-24 rounded-md border bg-popover px-3 pb-3 pt-5 shadow-sm hover:border-primary/70"
+      className="pinned-tray-card group relative min-h-24 rounded-md border bg-popover px-3 pb-3 pt-5 shadow-sm hover:border-primary/70 cursor-pointer"
       style={{ "--pinned-index": index } as CSSProperties}
+      onClick={() => onFocus?.(idea.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter") onFocus?.(idea.id) }}
     >
       <div className="absolute -top-px left-2 flex items-center gap-1">
         <Badge
@@ -41,7 +48,7 @@ function PinnedCard({
         </Badge>
       </div>
       <button
-        onClick={() => onUnpin(idea.id)}
+        onClick={(e) => { e.stopPropagation(); onUnpin(idea.id) }}
         className="absolute right-2 top-2 rounded-sm p-0.5 text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
         aria-label="Unpin"
       >
@@ -55,7 +62,7 @@ function PinnedCard({
   )
 }
 
-export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
+export function PinnedTray({ isOpen, onOpenChange, onFocusIdea }: PinnedTrayProps) {
   const { ideas, isLoading, mutate } = usePinnedIdeas()
   const { updatePin } = useIdeas({ status: "inbox" })
   const isMobile = useIsMobile()
@@ -105,6 +112,7 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
           idea={idea}
           index={index}
           onUnpin={handleUnpin}
+          onFocus={onFocusIdea}
         />
       ))}
     </div>
