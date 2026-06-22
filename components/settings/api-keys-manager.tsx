@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useReducer, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,15 +16,60 @@ const formatDate = (dateString: string) => {
   })
 }
 
+type ApiKeysState = {
+  newKeyName: string
+  newlyCreatedKey: string | null
+  editingId: string | null
+  editingName: string
+  isCreating: boolean
+}
+
+type ApiKeysAction =
+  | { type: 'SET_NEW_KEY_NAME'; name: string }
+  | { type: 'START_CREATING' }
+  | { type: 'CREATE_SUCCESS'; fullKey: string }
+  | { type: 'FINISH_CREATING' }
+  | { type: 'START_EDIT'; id: string; name: string }
+  | { type: 'SET_EDITING_NAME'; name: string }
+  | { type: 'CANCEL_EDIT' }
+  | { type: 'EDIT_SUCCESS' }
+
+const initialState: ApiKeysState = {
+  newKeyName: '',
+  newlyCreatedKey: null,
+  editingId: null,
+  editingName: '',
+  isCreating: false,
+}
+
+function apiKeysReducer(state: ApiKeysState, action: ApiKeysAction): ApiKeysState {
+  switch (action.type) {
+    case 'SET_NEW_KEY_NAME':
+      return { ...state, newKeyName: action.name }
+    case 'START_CREATING':
+      return { ...state, isCreating: true }
+    case 'CREATE_SUCCESS':
+      return { ...state, newlyCreatedKey: action.fullKey, newKeyName: '' }
+    case 'FINISH_CREATING':
+      return { ...state, isCreating: false }
+    case 'START_EDIT':
+      return { ...state, editingId: action.id, editingName: action.name }
+    case 'SET_EDITING_NAME':
+      return { ...state, editingName: action.name }
+    case 'CANCEL_EDIT':
+      return { ...state, editingId: null, editingName: '' }
+    case 'EDIT_SUCCESS':
+      return { ...state, editingId: null, editingName: '' }
+    default:
+      return state
+  }
+}
+
 export function ApiKeysManager() {
   const { keys, isLoading, create, rename, remove } = useApiKeys()
 
-  const [newKeyName, setNewKeyName] = useState("")
-  const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null)
+  const [state, dispatch] = useReducer(apiKeysReducer, initialState)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editingName, setEditingName] = useState("")
-  const [isCreating, setIsCreating] = useState(false)
 
   const copyToClipboard = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text)
@@ -33,17 +78,16 @@ export function ApiKeysManager() {
   }
 
   const handleCreate = async () => {
-    if (!newKeyName.trim() || isCreating) return
+    if (!state.newKeyName.trim() || state.isCreating) return
 
-    setIsCreating(true)
+    dispatch({ type: 'START_CREATING' })
     try {
-      const fullKey = await create(newKeyName.trim())
+      const fullKey = await create(state.newKeyName.trim())
       if (fullKey) {
-        setNewlyCreatedKey(fullKey)
-        setNewKeyName("")
+        dispatch({ type: 'CREATE_SUCCESS', fullKey })
       }
     } finally {
-      setIsCreating(false)
+      dispatch({ type: 'FINISH_CREATING' })
     }
   }
 
@@ -52,12 +96,11 @@ export function ApiKeysManager() {
   }
 
   const handleRename = async (id: string) => {
-    if (!editingName.trim()) return
+    if (!state.editingName.trim()) return
 
-    const ok = await rename(id, editingName.trim())
+    const ok = await rename(id, state.editingName.trim())
     if (ok) {
-      setEditingId(null)
-      setEditingName("")
+      dispatch({ type: 'EDIT_SUCCESS' })
     }
   }
 
@@ -72,31 +115,31 @@ export function ApiKeysManager() {
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
-          value={newKeyName}
-          onChange={(e) => setNewKeyName(e.target.value)}
+          value={state.newKeyName}
+          onChange={(e) => dispatch({ type: 'SET_NEW_KEY_NAME', name: e.target.value })}
           placeholder="e.g. n8n local workflow"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleCreate()
           }}
         />
-        <Button onClick={handleCreate} disabled={!newKeyName.trim() || isCreating} className="w-full sm:w-auto">
+        <Button onClick={handleCreate} disabled={!state.newKeyName.trim() || state.isCreating} className="w-full sm:w-auto">
           <Plus className="size-4 mr-2" />
           Create
         </Button>
       </div>
 
-      {newlyCreatedKey && (
+      {state.newlyCreatedKey && (
         <div className="rounded-lg border border-primary/30 bg-primary/10 p-3 space-y-2">
           <p className="text-sm font-medium">Copy your key now (shown once):</p>
           <div className="flex flex-col gap-2 sm:flex-row">
             <code className="min-w-0 flex-1 rounded bg-background px-2 py-2 text-[11px] leading-relaxed break-all whitespace-pre-wrap">
-              {newlyCreatedKey}
+              {state.newlyCreatedKey}
             </code>
             <Button
               variant="outline"
               size="sm"
               className="w-full sm:w-auto"
-              onClick={() => copyToClipboard(newlyCreatedKey, "new")}
+              onClick={() => copyToClipboard(state.newlyCreatedKey!, "new")}
             >
               {copiedId === "new" ? <Check className="size-4" /> : <Copy className="size-4" />}
             </Button>
@@ -117,17 +160,16 @@ export function ApiKeysManager() {
               <div key={key.id} className="rounded-lg border p-3 flex items-start gap-3">
                 <Key className="size-4 text-muted-foreground shrink-0" />
                 <div className="min-w-0 flex-1">
-                  {editingId === key.id ? (
+                  {state.editingId === key.id ? (
                     <div className="flex flex-col gap-2 sm:flex-row">
                       <Input
                         className="h-8"
-                        value={editingName}
-                        onChange={(e) => setEditingName(e.target.value)}
+                        value={state.editingName}
+                        onChange={(e) => dispatch({ type: 'SET_EDITING_NAME', name: e.target.value })}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleRename(key.id)
                           if (e.key === "Escape") {
-                            setEditingId(null)
-                            setEditingName("")
+                            dispatch({ type: 'CANCEL_EDIT' })
                           }
                         }}
                         autoFocus
@@ -146,14 +188,13 @@ export function ApiKeysManager() {
                     </>
                   )}
                 </div>
-                {editingId !== key.id && (
+                {state.editingId !== key.id && (
                   <div className="flex gap-1 shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setEditingId(key.id)
-                        setEditingName(key.name)
+                        dispatch({ type: 'START_EDIT', id: key.id, name: key.name })
                       }}
                     >
                       <Pencil className="size-4" />
