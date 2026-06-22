@@ -107,7 +107,7 @@ export function IdeasTabs({
             ) : (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="flex items-center gap-1.5 flex-1 self-stretch">
+                  <span className="flex items-center justify-center gap-1.5 flex-1 self-stretch">
                     <Icon className="size-4" />
                     <span className="hidden sm:inline">{tab.label}</span>
                   </span>

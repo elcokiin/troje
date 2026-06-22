@@ -48,7 +48,6 @@ export function IdeasList({ status, search, onOpenCapture, active = true, hideCa
 
   const handleNew = useCallback(() => {
     if (status === "inbox") {
-      setCaptureOpen(true)
       onOpenCapture?.()
     }
   }, [status, onOpenCapture])
