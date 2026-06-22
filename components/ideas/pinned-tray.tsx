@@ -97,37 +97,43 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
     <>
       {!isMobile && hasPins && !isOpen && (
         <button
+          type="button"
           onClick={() => onOpenChange(true)}
-          className="fixed bottom-12 left-0 z-50 w-1/3 max-w-80 min-w-0 p-1 cursor-pointer"
+          className="fixed bottom-0 left-0 z-50 flex h-24 w-1/3 min-w-0 cursor-pointer items-stretch p-1.5 pb-2 text-left"
+          aria-label={`Open pinned ideas (${ideas.length})`}
         >
-          <div className="flex flex-col items-stretch">
+          <div className="relative flex min-w-0 flex-1 flex-col justify-end overflow-hidden rounded-t-lg border border-b-0 bg-popover shadow-lg transition-colors hover:bg-accent/40">
             {ideas.slice(0, previewCount).map((idea, i) => (
               <div
                 key={idea.id}
                 className={cn(
-                  "bg-popover border rounded-lg p-2.5 text-left shadow-sm transition-all",
-                  i === 0 && "relative z-30",
-                  i === 1 && "relative z-20 -mt-9 scale-[0.96] opacity-80",
-                  i === 2 && "relative z-10 -mt-9 scale-[0.92] opacity-60",
+                  "absolute inset-x-2 rounded-md border bg-popover px-2.5 py-2 shadow-sm transition-all",
+                  i === 0 && "bottom-6 z-30 min-h-14",
+                  i === 1 && "bottom-4 z-20 scale-[0.96] opacity-70",
+                  i === 2 && "bottom-2 z-10 scale-[0.92] opacity-45",
                 )}
               >
-                <p className="text-xs leading-snug truncate text-foreground/80">
-                  {idea.content}
-                </p>
+                {i === 0 ? (
+                  <div className="flex min-w-0 items-start gap-2">
+                    <Pin className="mt-0.5 size-3 shrink-0 text-primary" />
+                    <p className="line-clamp-2 min-w-0 text-xs leading-snug text-foreground/85">
+                      {idea.content}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="h-3.5" />
+                )}
               </div>
             ))}
-            {extraCount > 0 && (
-              <div className="relative z-0 -mt-7 text-center">
-                <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+            <div className="relative z-40 mt-auto flex h-6 items-center justify-center gap-1 border-t bg-popover/95 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              <ChevronUp className="size-3" />
+              <span>{ideas.length} pinned</span>
+              {extraCount > 0 && (
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] normal-case tracking-normal">
                   +{extraCount}
                 </span>
-              </div>
-            )}
-            {ideas.length <= 3 && (
-              <div className="relative z-0 -mt-1 text-center">
-                <ChevronUp className="size-3 text-muted-foreground/50 inline-block" />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </button>
       )}
