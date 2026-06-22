@@ -3,6 +3,7 @@
 import { useCallback, useRef, useEffect, type CSSProperties } from "react"
 import { Pin, X, ChevronUp } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { usePinnedIdeas } from "@/hooks/use-pinned-ideas"
 import { useIdeas } from "@/hooks/use-ideas"
 import { useHotkey } from "@tanstack/react-hotkeys"
@@ -32,12 +33,6 @@ function PinnedCard({
       style={{ "--pinned-index": index } as CSSProperties}
     >
       <div className="absolute -top-px left-2 flex items-center gap-1">
-        <Badge
-          variant="secondary"
-          className="h-5 rounded-t-none border border-t-0 border-primary/35 bg-primary/15 px-2 text-[10px] font-semibold uppercase tracking-wide text-primary"
-        >
-          Troje
-        </Badge>
         <Badge
           variant="outline"
           className="h-5 rounded-t-none border-t-0 bg-popover px-1.5 text-[10px] text-muted-foreground"
@@ -138,12 +133,6 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
                   <>
                     <div className="absolute -top-px left-2 flex items-center gap-1">
                       <Badge
-                        variant="secondary"
-                        className="h-5 rounded-t-none border border-t-0 border-primary/35 bg-primary/15 px-2 text-[10px] font-semibold uppercase tracking-wide text-primary"
-                      >
-                        Troje
-                      </Badge>
-                      <Badge
                         variant="outline"
                         className="h-5 rounded-t-none border-t-0 bg-popover px-1.5 text-[10px] text-muted-foreground"
                       >
@@ -176,34 +165,31 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
       )}
 
       {isMobile ? (
-        isOpen && (
-          <div className="fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-popover border-t rounded-t-xl shadow-lg max-h-[50vh]">
-            <div className="flex items-center justify-between px-4 py-3 border-b shrink-0">
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
+          <SheetContent side="bottom" className="flex max-h-[60vh] flex-col gap-0 p-0">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Pinned ideas</SheetTitle>
+            </SheetHeader>
+            <div className="mx-auto mt-2 h-1 w-8 shrink-0 rounded-full bg-muted" />
+            <div className="flex items-center justify-between border-b px-4 py-3">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Pinned {hasPins && <span className="text-muted-foreground/50">({ideas.length})</span>}
               </span>
-              <button
-                onClick={() => onOpenChange(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Close pinned tray"
-              >
-                <X className="size-4" />
-              </button>
             </div>
-            <div className="overflow-y-auto min-h-0 flex-1">
+            <div className="min-h-0 flex-1 overflow-y-auto p-2">
               {loadingState}
               {emptyState}
               {listContent}
             </div>
-          </div>
-        )
+          </SheetContent>
+        </Sheet>
       ) : (
         isOpen && (
           <div
             ref={trayRef}
             className="pointer-events-none fixed bottom-0 left-0 z-50 w-1/3 min-w-0 px-1.5 pb-12"
           >
-            <div className="pinned-tray-list pointer-events-auto max-h-[calc(100vh-5rem)] overflow-y-auto rounded-t-md bg-popover shadow-lg">
+            <div className="pinned-tray-list pointer-events-auto max-h-[calc(100vh-5rem)] overflow-y-auto rounded-t-md bg-popover shadow-lg hide-scrollbar">
               <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b bg-popover px-4 py-3">
                 <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   <Pin className="size-3" />
