@@ -7,7 +7,7 @@ import { useIdeas } from "@/hooks/use-ideas"
 import { useHotkey } from "@tanstack/react-hotkeys"
 import { SHORTCUTS } from "@/lib/shortcuts"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
 interface PinnedTrayProps {
@@ -43,9 +43,9 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
         )}
       >
         <div className="flex items-center justify-between px-3 py-2.5 border-b shrink-0">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <SheetTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Pinned
-          </span>
+          </SheetTitle>
           <button
             onClick={() => onOpenChange(false)}
             className="text-muted-foreground hover:text-foreground transition-colors"
