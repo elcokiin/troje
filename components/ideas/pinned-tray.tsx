@@ -18,11 +18,11 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
   const { updatePin } = useIdeas({ status: "inbox" })
   const trayRef = useRef<HTMLDivElement>(null)
 
-  useHotkey({
-    hotkey: SHORTCUTS.togglePin.hotkeys[0],
-    callback: () => onOpenChange(!isOpen),
-    options: { enabled: true, preventDefault: true },
-  })
+  useHotkey(
+    SHORTCUTS.togglePin.hotkeys[0],
+    () => onOpenChange(!isOpen),
+    { enabled: true },
+  )
 
   useEffect(() => {
     if (!isOpen) return
@@ -47,7 +47,7 @@ export function PinnedTray({ isOpen, onOpenChange }: PinnedTrayProps) {
       <div
         className={cn(
           "absolute bottom-full left-0 mb-1 sm:ml-1 w-full sm:w-80 max-h-[60vh] bg-popover border rounded-t-lg sm:rounded-lg shadow-lg overflow-hidden transition-all duration-200 ease-out",
-          isOpen && hasPins
+          isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-2 pointer-events-none"
         )}
