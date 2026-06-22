@@ -58,29 +58,41 @@ export function IdeaCard({
     newStatus: "inbox" | "archived" | "deleted",
   ) => {
     setIsUpdating(true);
-    onStatusChange(idea.id, newStatus);
-    setIsUpdating(false);
+    try {
+      await onStatusChange(idea.id, newStatus);
+    } finally {
+      setIsUpdating(false);
+    }
     setMenuOpen(false);
   };
 
   const handlePinToggle = async () => {
     setIsUpdating(true);
-    onPinChange(idea.id, !idea.pinned);
-    setIsUpdating(false);
+    try {
+      await onPinChange(idea.id, !idea.pinned);
+    } finally {
+      setIsUpdating(false);
+    }
     setMenuOpen(false);
   };
 
   const handleColorSelect = async (colorId: string | null) => {
     setIsUpdating(true);
-    onColorChange(idea.id, colorId);
-    setIsUpdating(false);
+    try {
+      await onColorChange(idea.id, colorId);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handlePermanentDelete = async () => {
     if (onPermanentDelete) {
       setIsUpdating(true);
-      onPermanentDelete(idea.id);
-      setIsUpdating(false);
+      try {
+        await onPermanentDelete(idea.id);
+      } finally {
+        setIsUpdating(false);
+      }
       setMenuOpen(false);
     }
   };

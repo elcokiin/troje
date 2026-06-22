@@ -16,10 +16,10 @@ export type IdeaSource = "web" | "telegram" | "api";
 
 export interface IdeaCardProps {
   idea: Idea;
-  onStatusChange: (id: string, status: IdeaStatus) => void;
-  onPinChange: (id: string, pinned: boolean) => void;
-  onColorChange: (id: string, color: string | null) => void;
-  onPermanentDelete?: (id: string) => void;
+  onStatusChange: (id: string, status: IdeaStatus) => Promise<void>;
+  onPinChange: (id: string, pinned: boolean) => Promise<void>;
+  onColorChange: (id: string, color: string | null) => Promise<void>;
+  onPermanentDelete?: (id: string) => Promise<void>;
   isSelected?: boolean;
   showTrashInfo?: boolean;
 }
