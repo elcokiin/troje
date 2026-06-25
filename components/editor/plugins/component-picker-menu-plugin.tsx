@@ -10,7 +10,7 @@ import {
 import { createPortal } from "react-dom";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useBasicTypeaheadTriggerMatch } from "@lexical/react/LexicalTypeaheadMenuPlugin";
+import { useBasicTypeaheadTriggerMatch, type MenuOption } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { LexicalTypeaheadMenuPlugin } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { TextNode } from "lexical";
 
@@ -141,13 +141,14 @@ export function ComponentPickerMenuPlugin({
 
   const onSelectOption = useCallback(
     (
-      selectedOption: ComponentPickerOption,
+      selectedOption: MenuOption,
       nodeToRemove: TextNode | null,
       closeMenu: () => void,
       matchingString: string,
     ) => {
+      const option = selectedOption as ComponentPickerOption;
       nodeToRemove?.remove();
-      selectedOption.onSelect(matchingString, editor, showModal);
+      option.onSelect(matchingString, editor, showModal);
       closeMenu();
     },
     [editor, showModal],

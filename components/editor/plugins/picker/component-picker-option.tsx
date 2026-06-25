@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 import { MenuOption } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { type LexicalEditor } from "lexical";
@@ -7,7 +7,7 @@ export class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
   title: string;
   // Icon for display
-  icon?: ReactNode;
+  icon?: ReactElement;
   // For extra searching.
   keywords: Array<string>;
   // TBD
@@ -25,7 +25,7 @@ export class ComponentPickerOption extends MenuOption {
   constructor(
     title: string,
     options: {
-      icon?: ReactNode;
+      icon?: ReactElement;
       keywords?: Array<string>;
       keyboardShortcut?: string;
       onSelect: (
