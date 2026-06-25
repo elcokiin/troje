@@ -118,6 +118,7 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
         )}
       >
         <button
+          type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={handleClose}
           disabled={isSubmitting}
@@ -127,6 +128,7 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
           <ShortcutKbd hotkey={SHORTCUTS.cancelCapture.hotkeys[0]} />
         </button>
         <button
+          type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={handleSubmit}
           disabled={!content.trim() || isSubmitting}
