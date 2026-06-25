@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { ReactNode } from "react";
 import {
   Suspense,
   useCallback,
@@ -87,7 +87,7 @@ function LazyImage({
   src: string;
   width: "inherit" | number;
   onError: () => void;
-}): JSX.Element {
+}): ReactNode {
   const status = useSuspenseImage(src);
 
   useEffect(() => {
@@ -166,7 +166,7 @@ function LazyImage({
   );
 }
 
-function BrokenImage(): JSX.Element {
+function BrokenImage(): ReactNode {
   return (
     <img
       src={""}
@@ -195,7 +195,7 @@ export default function ImageComponent({
   nodeKey: NodeKey;
   src: string;
   width: "inherit" | number;
-}): JSX.Element {
+}): ReactNode {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isSelected, setSelected, clearSelection] =

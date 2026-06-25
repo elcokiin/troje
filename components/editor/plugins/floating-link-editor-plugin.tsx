@@ -1,6 +1,6 @@
 import {
   type Dispatch,
-  type JSX,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -54,7 +54,7 @@ function FloatingLinkEditor({
   anchorElem: HTMLElement;
   isLinkEditMode: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
-}): JSX.Element {
+}): ReactNode {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState("");
@@ -298,7 +298,7 @@ function useFloatingLinkEditorToolbar(
   anchorElem: HTMLDivElement | null,
   isLinkEditMode: boolean,
   setIsLinkEditMode: Dispatch<boolean>,
-): JSX.Element | null {
+): ReactNode {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLink, setIsLink] = useState(false);
 
@@ -410,7 +410,7 @@ export function FloatingLinkEditorPlugin({
   anchorElem: HTMLDivElement | null;
   isLinkEditMode: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
-}): JSX.Element | null {
+}): ReactNode {
   const [editor] = useLexicalComposerContext();
 
   return useFloatingLinkEditorToolbar(

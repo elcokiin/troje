@@ -61,10 +61,11 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
 
   useEffect(() => {
     if (isExpanded) {
-      setTimeout(() => {
+      const id = setTimeout(() => {
         const el = document.querySelector("[contenteditable]") as HTMLElement | null
         el?.focus()
       }, 0)
+      return () => clearTimeout(id)
     }
   }, [isExpanded])
 

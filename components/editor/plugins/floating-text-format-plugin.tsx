@@ -1,6 +1,6 @@
 import {
   type Dispatch,
-  type JSX,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -65,7 +65,7 @@ function TextFormatFloatingToolbar({
   isSuperscript: boolean;
   isUnderline: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
-}): JSX.Element {
+}): ReactNode {
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
   const insertLink = useCallback(() => {
@@ -306,7 +306,7 @@ function useFloatingTextFormatToolbar(
   editor: LexicalEditor,
   anchorElem: HTMLDivElement | null,
   setIsLinkEditMode: Dispatch<boolean>,
-): JSX.Element | null {
+): ReactNode {
   const [isText, setIsText] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
@@ -425,7 +425,7 @@ export function FloatingTextFormatToolbarPlugin({
 }: {
   anchorElem: HTMLDivElement | null;
   setIsLinkEditMode: Dispatch<boolean>;
-}): JSX.Element | null {
+}): ReactNode {
   const [editor] = useLexicalComposerContext();
 
   return useFloatingTextFormatToolbar(editor, anchorElem, setIsLinkEditMode);

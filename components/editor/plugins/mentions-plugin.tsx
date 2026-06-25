@@ -1,4 +1,4 @@
-import { type JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 import { createPortal } from "react-dom";
 
@@ -513,14 +513,22 @@ const dummyLookupService = {
 
 function useMentionLookupService(mentionString: string | null) {
   const [results, setResults] = useState<Array<string>>([]);
+  const [prevMentionString, setPrevMentionString] =
+    useState(mentionString);
 
-  useEffect(() => {
-    const cachedResults = mentionsCache.get(mentionString);
-
+  if (mentionString !== prevMentionString) {
+    setPrevMentionString(mentionString);
     if (mentionString == null) {
       setResults([]);
+    }
+  }
+
+  useEffect(() => {
+    if (mentionString == null) {
       return;
     }
+
+    const cachedResults = mentionsCache.get(mentionString);
 
     if (cachedResults === null) {
       return;
@@ -572,16 +580,16 @@ function getPossibleQueryMatch(text: string): MenuTextMatch | null {
 
 class MentionTypeaheadOption extends MenuOption {
   name: string;
-  picture: JSX.Element;
+  picture: ReactNode;
 
-  constructor(name: string, picture: JSX.Element) {
+  constructor(name: string, picture: ReactNode) {
     super(name);
     this.name = name;
     this.picture = picture;
   }
 }
 
-export function MentionsPlugin(): JSX.Element | null {
+export function MentionsPlugin(): ReactNode {
   const [editor] = useLexicalComposerContext();
 
   const [queryString, setQueryString] = useState<string | null>(null);
@@ -592,6 +600,7 @@ export function MentionsPlugin(): JSX.Element | null {
     minLength: 0,
   });
 
+  const icon = <CircleUserRoundIcon className="size-4" />;
   const options = useMemo(
     () =>
       results
@@ -599,7 +608,7 @@ export function MentionsPlugin(): JSX.Element | null {
           (result) =>
             new MentionTypeaheadOption(
               result,
-              <CircleUserRoundIcon className="size-4" />,
+              icon,
             ),
         )
         .slice(0, SUGGESTION_LIST_LENGTH_LIMIT),

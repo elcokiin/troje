@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type JSX, useRef } from "react";
+import { useRef } from "react";
 
 import { calculateZoomLevel } from "@lexical/utils";
 import type { LexicalEditor } from "lexical";
@@ -27,7 +27,7 @@ export function ImageResizer({
   maxWidth?: number;
   onResizeEnd: (width: "inherit" | number, height: "inherit" | number) => void;
   onResizeStart: () => void;
-}): JSX.Element {
+}): React.ReactNode {
   const controlWrapperRef = useRef<HTMLDivElement>(null);
   const userSelect = useRef({
     priority: "",

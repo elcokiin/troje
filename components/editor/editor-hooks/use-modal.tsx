@@ -1,4 +1,4 @@
-import { type JSX, useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/dialog";
 
 export function useEditorModal(): [
-  JSX.Element | null,
-  (title: string, showModal: (onClose: () => void) => JSX.Element) => void,
+  ReactNode,
+  (title: string, showModal: (onClose: () => void) => ReactNode) => void,
 ] {
   const [modalContent, setModalContent] = useState<null | {
     closeOnClickOutside: boolean;
-    content: JSX.Element;
+    content: ReactNode;
     title: string;
   }>(null);
 
@@ -41,7 +41,7 @@ export function useEditorModal(): [
   const showModal = useCallback(
     (
       title: string,
-      getContent: (onClose: () => void) => JSX.Element,
+      getContent: (onClose: () => void) => ReactNode,
       closeOnClickOutside = false,
     ) => {
       setModalContent({

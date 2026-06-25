@@ -1,4 +1,4 @@
-import { type JSX, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import {
   $isAutoLinkNode,
@@ -158,7 +158,7 @@ export function InsertImageDialog({
 }: {
   activeEditor: LexicalEditor;
   onClose: () => void;
-}): JSX.Element {
+}): ReactNode {
   const hasModifier = useRef(false);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import {
-  type JSX,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -113,7 +113,7 @@ export function ComponentPickerMenuPlugin({
   }: {
     queryString: string;
   }) => Array<ComponentPickerOption>;
-}): JSX.Element {
+}): ReactNode {
   const [editor] = useLexicalComposerContext();
   const [modal, showModal] = useEditorModal();
   const [queryString, setQueryString] = useState<string | null>(null);

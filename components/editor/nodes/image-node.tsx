@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { ReactNode } from "react";
 import * as React from "react";
 
 import type {
@@ -56,7 +56,7 @@ export type SerializedImageNode = Spread<
   SerializedLexicalNode
 >;
 
-export class ImageNode extends DecoratorNode<JSX.Element> {
+export class ImageNode extends DecoratorNode<ReactNode> {
   __src: string;
   __altText: string;
   __width: "inherit" | number;
@@ -175,7 +175,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return this.getLatest().__altText;
   }
 
-  decorate(): JSX.Element {
+  decorate(): ReactNode {
     return (
       <ImageComponent
         src={this.__src}
