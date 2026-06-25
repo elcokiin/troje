@@ -142,10 +142,12 @@ export function EditorX({
   onChange,
   placeholder = "Type here...",
   className,
-  minHeight = "120px",
+  minHeight = "1lh",
   disabled,
   onEscape,
   onModEnter,
+  onFocus,
+  onBlur,
 }: {
   value: string
   onChange: (markdown: string) => void
@@ -155,6 +157,8 @@ export function EditorX({
   disabled?: boolean
   onEscape?: () => void
   onModEnter?: () => void
+  onFocus?: () => void
+  onBlur?: () => void
 }) {
   const initialConfig = {
     namespace: "TrojeEditor",
@@ -190,11 +194,13 @@ export function EditorX({
         <RichTextPlugin
           contentEditable={
             <LexicalContentEditable
-              className="relative block overflow-auto px-4 py-3 focus:outline-none text-base leading-relaxed"
-              style={{ minHeight }}
+              className="relative block overflow-auto px-4 py-2 focus:outline-none text-base leading-normal"
+              style={{ minHeight: "1lh" }}
               aria-placeholder={placeholder}
+              onFocus={onFocus}
+              onBlur={onBlur}
               placeholder={
-                <div className="text-muted-foreground/60 pointer-events-none absolute top-0 left-0 overflow-hidden px-4 py-3 text-ellipsis select-none text-base">
+                <div className="text-muted-foreground/60 pointer-events-none absolute top-0 left-0 overflow-hidden px-4 py-2 text-ellipsis select-none text-base">
                   {placeholder}
                 </div>
               }
