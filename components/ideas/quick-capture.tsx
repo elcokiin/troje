@@ -89,9 +89,9 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
     <div
       key={openCount}
       className={cn(
-        "relative rounded-xl transition-colors duration-200",
-        "bg-muted/0 hover:bg-muted/30 focus-within:bg-muted/50",
-        isMobile && "rounded-none"
+        "relative rounded-md min-h-12 border border-dashed border-input bg-card transition-colors duration-200",
+        "hover:border-solid",
+        isMobile && "rounded-none border-x-0"
       )}
     >
       <EditorX

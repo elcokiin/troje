@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useMemo, useState } from "react"
 import { LexicalComposer } from "@lexical/react/LexicalComposer"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { ContentEditable as LexicalContentEditable } from "@lexical/react/LexicalContentEditable"
@@ -22,6 +22,8 @@ import { NumberedListPickerPlugin } from "@/components/editor/plugins/picker/num
 import { CodePickerPlugin } from "@/components/editor/plugins/picker/code-picker-plugin"
 import { QuotePickerPlugin } from "@/components/editor/plugins/picker/quote-picker-plugin"
 import { EmojiPickerPlugin } from "@/components/editor/plugins/emoji-picker-plugin"
+import { FloatingTextFormatToolbarPlugin } from "@/components/editor/plugins/floating-text-format-plugin"
+import { FloatingLinkEditorPlugin } from "@/components/editor/plugins/floating-link-editor-plugin"
 import { editorTheme } from "@/components/editor/themes/editor-theme"
 import "@/components/editor/themes/editor-theme.css"
 import { cn } from "@/lib/utils"
@@ -160,7 +162,7 @@ export function EditorX({
   onFocus?: () => void
   onBlur?: () => void
 }) {
-  const initialConfig = {
+  const initialConfig = useMemo(() => ({
     namespace: "TrojeEditor",
     theme: editorTheme,
     nodes: [
@@ -177,14 +179,26 @@ export function EditorX({
     onError: (error: Error) => {
       console.error(error)
     },
-  }
+  }), [])
+
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false)
+  const anchorRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className={cn("relative", disabled && "pointer-events-none opacity-50", className)}>
+    <div ref={anchorRef} className={cn("relative", disabled && "pointer-events-none opacity-50", className)}>
       <LexicalComposer initialConfig={initialConfig}>
         <MarkdownShortcutsPlugin />
         <SlashMenuPlugin />
         <EmojiPickerPlugin />
+        <FloatingTextFormatToolbarPlugin
+          anchorElem={anchorRef.current}
+          setIsLinkEditMode={setIsLinkEditMode}
+        />
+        <FloatingLinkEditorPlugin
+          anchorElem={anchorRef.current}
+          isLinkEditMode={isLinkEditMode}
+          setIsLinkEditMode={setIsLinkEditMode}
+        />
         <HistoryPlugin />
         <KeyboardPlugin onEscape={onEscape} onModEnter={onModEnter} />
         <EditorContentPlugin
