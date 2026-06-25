@@ -21,7 +21,6 @@ import {
   Copy,
 } from "lucide-react"
 import { IdeaCardMenu } from "@/components/ideas/idea-card-menu"
-import { EditorX } from "@/components/editor/editor-x"
 import ReactMarkdown from "react-markdown"
 import type { Components } from "react-markdown"
 import { cn } from "@/lib/utils"
@@ -58,11 +57,36 @@ const mdComponents: Components = {
     <strong className="font-semibold" {...props}>{children}</strong>
   ),
   em: ({ children, ...props }) => <em className="italic" {...props}>{children}</em>,
+  h1: ({ children, ...props }) => (
+    <h1 className="text-xl font-bold mt-3 mb-1.5 leading-tight" {...props}>{children}</h1>
+  ),
+  h2: ({ children, ...props }) => (
+    <h2 className="text-lg font-bold mt-2.5 mb-1 leading-tight" {...props}>{children}</h2>
+  ),
+  h3: ({ children, ...props }) => (
+    <h3 className="text-base font-semibold mt-2 mb-1 leading-tight" {...props}>{children}</h3>
+  ),
+  h4: ({ children, ...props }) => (
+    <h4 className="text-sm font-semibold mt-1.5 mb-0.5" {...props}>{children}</h4>
+  ),
+  h5: ({ children, ...props }) => (
+    <h5 className="text-sm font-medium mt-1.5 mb-0.5" {...props}>{children}</h5>
+  ),
+  h6: ({ children, ...props }) => (
+    <h6 className="text-sm font-medium mt-1.5 mb-0.5 text-muted-foreground" {...props}>{children}</h6>
+  ),
   ul: ({ children, ...props }) => (
     <ul className="list-disc pl-5 text-sm space-y-0.5" {...props}>{children}</ul>
   ),
   ol: ({ children, ...props }) => (
     <ol className="list-decimal pl-5 text-sm space-y-0.5" {...props}>{children}</ol>
+  ),
+  blockquote: ({ children, ...props }) => (
+    <blockquote className="border-l-2 border-muted-foreground/30 pl-3 italic text-sm text-muted-foreground my-1.5" {...props}>{children}</blockquote>
+  ),
+  hr: () => <hr className="my-3 border-muted-foreground/20" />,
+  a: ({ children, ...props }) => (
+    <a className="text-primary underline underline-offset-2 hover:text-primary/80" {...props}>{children}</a>
   ),
 }
 
@@ -71,7 +95,6 @@ export function IdeaCard({
   onStatusChange,
   onPinChange,
   onColorChange,
-  onContentChange,
   onPermanentDelete,
   isSelected = false,
   showTrashInfo = false,
@@ -79,14 +102,7 @@ export function IdeaCard({
   const [isUpdating, setIsUpdating] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editContent, setEditContent] = useState(idea.content)
-  const editContentRef = useRef(editContent)
   const cardRef = useRef<HTMLDivElement>(null)
-  const editorWrapperRef = useRef<HTMLDivElement>(null)
-  const isCancelRef = useRef(false)
-
-  useEffect(() => { editContentRef.current = editContent }, [editContent])
 
   const handleMenuOpenChange = useCallback((open: boolean) => {
     if (!open && document.activeElement instanceof HTMLElement) {
@@ -136,69 +152,6 @@ export function IdeaCard({
     }
   }
 
-  const startEditing = useCallback(() => {
-    if (!onContentChange) return
-    setEditContent(idea.content)
-    isCancelRef.current = false
-    setIsEditing(true)
-  }, [idea.content, onContentChange])
-
-  const cancelEditing = useCallback(() => {
-    isCancelRef.current = true
-    setIsEditing(false)
-    setEditContent(idea.content)
-  }, [idea.content])
-
-  const saveEditing = useCallback(async () => {
-    const trimmed = editContentRef.current.trim()
-    if (!trimmed || trimmed === idea.content || !onContentChange) {
-      setIsEditing(false)
-      return
-    }
-    setIsUpdating(true)
-    try {
-      await onContentChange(idea.id, trimmed)
-      setIsEditing(false)
-    } finally {
-      setIsUpdating(false)
-    }
-  }, [idea.content, idea.id, onContentChange])
-
-  useEffect(() => {
-    if (!isEditing) return
-
-    setTimeout(() => {
-      (editorWrapperRef.current?.querySelector("[contenteditable]") as HTMLElement)?.focus()
-    }, 0)
-
-    const editorEl = editorWrapperRef.current
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault()
-        e.stopPropagation()
-        cancelEditing()
-      }
-      if ((e.key === "Enter" && (e.metaKey || e.ctrlKey))) {
-        e.preventDefault()
-        saveEditing()
-      }
-    }
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (editorWrapperRef.current && !editorWrapperRef.current.contains(e.target as Node)) {
-        saveEditing()
-      }
-    }
-
-    editorEl?.addEventListener("keydown", handleKeyDown)
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      editorEl?.removeEventListener("keydown", handleKeyDown)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isEditing])
-
   useEffect(() => {
     if (isSelected && cardRef.current) {
       cardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" })
@@ -206,7 +159,7 @@ export function IdeaCard({
   }, [isSelected])
 
   useHotkey(SHORTCUTS.openActions.hotkeys[0], () => setMenuOpen(true), {
-    enabled: isSelected && !menuOpen && !isEditing,
+    enabled: isSelected && !menuOpen,
     ignoreInputs: true,
     preventDefault: true,
     conflictBehavior: "allow",
@@ -219,14 +172,14 @@ export function IdeaCard({
   }, [idea.content])
 
   useHotkey(SHORTCUTS.copyIdea.hotkeys[0], handleCopy, {
-    enabled: isSelected && !isEditing,
+    enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
     conflictBehavior: "allow",
   })
 
   useHotkey(SHORTCUTS.togglePin.hotkeys[0], () => handlePinToggle(), {
-    enabled: isSelected && !isEditing,
+    enabled: isSelected,
     ignoreInputs: true,
     preventDefault: true,
     conflictBehavior: "allow",
@@ -246,7 +199,6 @@ export function IdeaCard({
         isUpdating && "opacity-50 pointer-events-none",
         isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
         idea.background_color && "border-transparent",
-        isEditing && "ring-2 ring-muted-foreground/30",
       )}
     >
       <IconTooltip
@@ -299,28 +251,11 @@ export function IdeaCard({
         />
         <CardContent className="pt-2 pl-4 pr-10">
           <div className="space-y-3">
-            {isEditing ? (
-              <div ref={editorWrapperRef}>
-                <EditorX
-                  value={editContent}
-                  onChange={setEditContent}
-                  placeholder="Edit your idea..."
-                  minHeight="60px"
-                />
-              </div>
-            ) : (
-              <div
-                onClick={startEditing}
-                className={cn(
-                  "text-sm leading-relaxed",
-                  onContentChange && !showTrashInfo && "cursor-pointer",
-                )}
-              >
-                <ReactMarkdown components={mdComponents}>
-                  {idea.content}
-                </ReactMarkdown>
-              </div>
-            )}
+            <div className="text-sm leading-relaxed">
+              <ReactMarkdown components={mdComponents}>
+                {idea.content}
+              </ReactMarkdown>
+            </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 {idea.source === "telegram" ? (

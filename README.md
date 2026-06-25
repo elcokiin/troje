@@ -1,22 +1,69 @@
 # Troje
 
-A personal idea management system designed for **frictionless capture**. Troje recognizes that inspiration strikes at unpredictable moments and optimizes for speed of entry rather than elaborate categorization at the point of capture.
+> Don't know where to put those random ideas, notes, or whatever? Alright welcome 🤗
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![Neon](https://img.shields.io/badge/Neon-PostgreSQL-00e599?logo=neon)](https://neon.tech)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+Troje is an **idea capture and action layer** built for the moments inspiration strikes. Optimized for speed of entry, not elaborate categorization at the point of capture.
+
+---
+
+## Screenshots
+
+| |
+|---|
+| ![Main dashboard](YOUR_DASHBOARD_URL) |
+| **Main dashboard** – ideas in a masonry grid with color-coded cards, Inbox/Archived/Trash tabs, and bottom navigation. This is where you spend your time. |
+| ![Mobile](YOUR_MOBILE_URL) |
+| **Mobile PWA** – installable on your home screen, icon-only tab navigation, bottom sheet for pinned ideas. |
+
+---
 
 ## Features
 
-- **Quick Capture** - Rapidly save ideas from the web interface or external tools
-- **Keyboard-First Navigation** - Vim-style keybindings for efficient idea management
-- **Pinterest-Style Layout** - Masonry grid for visual organization
-- **Pin & Color Coding** - Pin important ideas and customize card backgrounds
-- **Trash with Recovery** - Soft delete with time tracking and permanent delete option
-- **API Keys for HTTP Capture** - Create per-user keys from Settings and send ideas via HTTP
-- **PWA Install Support** - Install Troje on mobile home screen
+- **Frictionless capture** — Press `n`, type, save with `⌘↵`. Done.
+- **Keyboard-first** — Navigate ideas with `j`/`k`, act with `Enter`, no mouse needed.
+- **Masonry grid** — Pinterest-style layout with color-coded cards.
+- **Pin & organize** — Pin important ideas to a persistent tray, archive the rest.
+- **Trash with recovery** — Soft delete with time tracking, permanent delete option.
+- **API-first capture** — Generate API keys from Settings, POST ideas from any tool.
+- **PWA ready** — Install on mobile home screen, works offline.
+- **Dark mode** — Light, dark, and system themes with a single keystroke (`d`).
+
+---
+
+## Quick Start
+
+```bash
+bun install
+bun run db:migrate
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) — sign in with Google.
+
+### Database
+
+Troje uses Drizzle ORM with Neon PostgreSQL:
+
+```bash
+bun run db:generate   # Create migration
+bun run db:migrate    # Apply migration
+bun run db:studio     # Open Drizzle Studio
+```
+
+Environment variables: see `.env.example` — only `DATABASE_URL` is required.
+
+---
 
 ## Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| `n` | Create new idea |
+| `n` | New idea |
 | `j` / `k` | Navigate down / up |
 | `h` / `l` | Navigate left / right |
 | `Enter` | Open card menu |
@@ -24,99 +71,46 @@ A personal idea management system designed for **frictionless capture**. Troje r
 | `q` | Close dialog |
 | `e` | Open settings |
 | `d` | Toggle light/dark theme |
-| `Ctrl+E` / `Cmd+E` | Expand or restore settings |
+| `Ctrl+E` / `Cmd+E` | Expand / restore settings |
 | `Ctrl+1` | Switch to Archived |
 | `Ctrl+2` | Switch to Inbox |
 | `Ctrl+3` | Switch to Trash |
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | Neon PostgreSQL connection string |
 
 ---
 
 ## API Reference
 
-### Base URL
-```
-https://your-app.vercel.app/api/ideas
-```
+Send ideas to Troje from any tool that speaks HTTP.
 
 ### Authentication
 
-You can authenticate API requests in two ways:
-
-1. Browser session cookie (when logged in to the web app)
-2. API key in header:
-
 ```http
 Authorization: Bearer troje_your_api_key_here
 ```
+
+Generate keys from **Settings → API Keys** (visible once on creation).
 
 ### Endpoints
 
-#### Create Idea
-```http
-POST /api/ideas
-Content-Type: application/json
-Authorization: Bearer troje_your_api_key_here
-
-{
-  "content": "My brilliant idea"
-}
-```
-
-**Response (201):**
+**Create idea** — `POST /api/ideas`
 ```json
-{
-  "idea": {
-    "id": "uuid",
-    "content": "My brilliant idea",
-    "source": "api",
-    "status": "inbox",
-    "pinned": false,
-    "background_color": null,
-    "created_at": "2024-01-01T00:00:00.000Z"
-  }
-}
+{ "content": "My brilliant idea" }
 ```
 
-#### List Ideas
-```http
-GET /api/ideas?status=inbox
-GET /api/ideas?status=archived
-GET /api/ideas?status=deleted
-GET /api/ideas?status=inbox&search=keyword
+**List ideas** — `GET /api/ideas?status=inbox|archived|deleted&search=keyword`
+
+**Update idea** — `PATCH /api/ideas/{id}`
+```json
+{ "status": "archived", "pinned": true, "background_color": "mint" }
 ```
 
-#### Update Idea
-```http
-PATCH /api/ideas/{id}
-Content-Type: application/json
+**Delete permanently** — `DELETE /api/ideas/{id}`
 
-{
-  "status": "archived",
-  "pinned": true,
-  "background_color": "mint"
-}
-```
+<details>
+<summary><b>Available background colors</b></summary>
 
-**Available colors:** `coral`, `peach`, `sand`, `mint`, `sage`, `fog`, `storm`, `dusk`, `lavender`, `blossom`, `rose`
-
-#### Delete Idea Permanently
-```http
-DELETE /api/ideas/{id}
-```
-
-### Generate API Keys
-
-Open Settings and go to `API Keys`:
-
-- Create a named key
-- Copy it once (full value is only shown on creation)
-- Rename or delete keys anytime
+`coral`, `peach`, `sand`, `mint`, `sage`, `fog`, `storm`, `dusk`, `lavender`, `blossom`, `rose`
+</details>
 
 ### cURL Example
 
@@ -129,60 +123,20 @@ curl -X POST "http://localhost:3000/api/ideas" \
 
 ---
 
-## Database Schema
-
-```sql
-CREATE TABLE ideas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  content TEXT NOT NULL,
-  source TEXT DEFAULT 'web',
-  status TEXT DEFAULT 'inbox',
-  tags TEXT[],
-  pinned BOOLEAN DEFAULT false,
-  background_color TEXT,
-  deleted_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
----
-
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router)
-- **Database:** Neon (Serverless PostgreSQL)
-- **Styling:** Tailwind CSS v4
-- **Components:** shadcn/ui
-- **Deployment:** Vercel
-
----
-
-## Getting Started
-
-```bash
-bun install
-bun run db:migrate
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app.
-
-### Database Migrations
-
-Troje uses Drizzle ORM with Neon. Schema definitions live in `db/schema.ts`,
-runtime queries are grouped under `db/`, and generated migrations live in
-`drizzle/`.
-
-```bash
-bun run db:generate
-bun run db:migrate
-bun run db:studio
-```
+| | |
+|---|---|
+| **Framework** | [Next.js 16](https://nextjs.org) (App Router, React 19) |
+| **Database** | [Neon](https://neon.tech) (Serverless PostgreSQL via Drizzle ORM) |
+| **Auth** | [NextAuth.js](https://next-auth.js.org) (Google OAuth) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
+| **Data fetching** | [SWR](https://swr.vercel.app) |
+| **State** | [Zustand](https://github.com/pmndrs/zustand) |
+| **Deployment** | [Vercel](https://vercel.com) |
 
 ---
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

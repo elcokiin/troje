@@ -21,6 +21,7 @@ interface QuickCaptureProps {
 export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: QuickCaptureProps) {
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [editorKey, setEditorKey] = useState(0)
   const contentRef = useRef(content)
   const editorRef = useRef<HTMLDivElement>(null)
 
@@ -44,18 +45,43 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
     setIsSubmitting(true)
     try {
       await onCapture(currentContent.trim())
-      setContent("")
-      onOpenChange?.(false)
     } finally {
       setIsSubmitting(false)
+      setContent("")
+      setEditorKey((k) => k + 1)
+      onOpenChange?.(false)
     }
   }, [isSubmitting, onCapture, onOpenChange])
 
   const handleClose = useCallback(() => {
+    setContent("")
+    setEditorKey((k) => k + 1)
     onOpenChange?.(false)
     onClose?.()
-    setContent("")
   }, [onOpenChange, onClose])
+
+  useEffect(() => {
+    if (!isExpanded) return
+
+    const el = editorRef.current?.querySelector("[contenteditable]")
+    if (!el) return
+
+    const handleKeyDown = (e: Event) => {
+      const ke = e as KeyboardEvent
+      if (ke.key === "Escape") {
+        ke.preventDefault()
+        ke.stopPropagation()
+        handleClose()
+      } else if ((ke.key === "Enter" && (ke.metaKey || ke.ctrlKey))) {
+        ke.preventDefault()
+        ke.stopPropagation()
+        handleSubmit()
+      }
+    }
+
+    el.addEventListener("keydown", handleKeyDown)
+    return () => el.removeEventListener("keydown", handleKeyDown)
+  }, [isExpanded, handleClose, handleSubmit])
 
   if (!isExpanded) {
     return (
@@ -79,6 +105,7 @@ export function QuickCapture({ onCapture, isOpen, onOpenChange, onClose }: Quick
       <div className="flex flex-col">
         <div ref={editorRef}>
           <EditorX
+            key={editorKey}
             value={content}
             onChange={setContent}
             placeholder="What's on your mind? Type **markdown** naturally..."
