@@ -1,7 +1,7 @@
 "use client"
 
 import { HotkeysProvider, useHotkey } from "@tanstack/react-hotkeys"
-import { useTheme } from "@/components/providers/theme-provider"
+import { useTheme } from "next-themes"
 import { useShortcutPreference } from "@/hooks/use-shortcut-preferences"
 import { SHORTCUTS } from "@/lib/shortcuts"
 
@@ -10,6 +10,7 @@ function GlobalThemeShortcut() {
   const [themeToggleKeyEnabled] = useShortcutPreference("troje-shortcut-theme-toggle")
 
   useHotkey(SHORTCUTS.toggleTheme.hotkeys[0], () => {
+    if (!resolvedTheme) return
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
   }, {
     enabled: themeToggleKeyEnabled,

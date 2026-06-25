@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { ThemeProvider } from '@/components/providers/theme-provider'
+import { ThemeProvider } from 'next-themes'
 import { SessionProvider } from '@/components/providers/session-provider'
 import { PwaRegister } from '@/components/providers/pwa-register'
 import { HotkeysRootProvider } from '@/components/providers/hotkeys-root-provider'
@@ -54,7 +54,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <SessionProvider>
-          <ThemeProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <HotkeysRootProvider>
               <TooltipProvider>
                 {children}
