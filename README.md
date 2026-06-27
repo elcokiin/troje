@@ -148,9 +148,9 @@ curl -X POST "http://localhost:3000/api/ideas" \
 
 ![Troje platform architecture](public/screenshots/platform-goal.png)
 
-> Track the full roadmap on [Fizzy](https://app.fizzy.do/6226632/public/boards/cKgowdGq5NpUrGW2NHHywCwz).
+> Track the full roadmap on [Fizzy](https://app.fizzy.do/6226632/public/boards/cKgowfGq5NpUrGW2NHHywCwz).
 
-Open to collaborate, feedback, or just a good idea — always learning.
+Open to collaborate, feedback, or just a good idea — alwaaays learniiing.
 
 ---
 
