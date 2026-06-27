@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/icon.svg" width="48" height="48" alt="Troje logo" style="vertical-align: middle;" />
+  <img src="public/screenshots/logo-font.jpeg" width="400" alt="Troje logo" />
 </p>
 
 <p align="center">
