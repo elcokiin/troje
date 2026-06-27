@@ -1,6 +1,10 @@
-# Troje
+<p align="center">
+  <img src="public/icon.svg" width="48" height="48" alt="Troje logo" style="vertical-align: middle;" />
+</p>
 
-> Don't know where to put those random ideas, notes, or whatever? Alright welcome 🤗
+<p align="center">
+  <em>Don't know where to put those random ideas, notes, or whatever? Alright welcome 🤗</em>
+</p>
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
@@ -15,9 +19,9 @@ Troje is an **idea capture and action layer** built for the moments inspiration 
 
 | |
 |---|
-| ![Main dashboard](/screenshots/dashboard.png) |
-| **Main dashboard** – ideas in a masonry grid with color-coded cards, Inbox/Archived/Trash tabs, and bottom navigation. This is where you spend your time. |
-| ![Mobile](/screenshots/mobile.jpeg) |
+| ![Main dashboard](public/screenshots/dashboard.png) |
+| **Main dashboard** – ideas in a masonry grid, Inbox/Archived/Trash tabs, and bottom navigation. This is where you spend your time. |
+| <img src="public/screenshots/mobile.jpeg" width="280" alt="Mobile" style="display: block; margin: 0 auto;" /> |
 | **Mobile PWA** – installable on your home screen, icon-only tab navigation, bottom sheet for pinned ideas. |
 
 ---
@@ -26,7 +30,7 @@ Troje is an **idea capture and action layer** built for the moments inspiration 
 
 - **Frictionless capture** — Press `n`, type, save with `⌘↵`. Done.
 - **Keyboard-first** — Navigate ideas with `j`/`k`, act with `Enter`, no mouse needed.
-- **Masonry grid** — Pinterest-style layout with color-coded cards.
+- **Masonry grid** — Pinterest-style layout.
 - **Markdown support** — Write with **bold**, *italics*, lists, code blocks, headings, and more. Rendered inline on cards.
 - **Pin & organize** — Pin important ideas to a persistent tray, archive the rest.
 - **Trash with recovery** — Soft delete with time tracking, permanent delete option.
