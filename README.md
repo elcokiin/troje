@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="public/screenshots/logo-font.jpeg" width="400" alt="Troje logo" />
+  <img src="public/screenshots/logo-font.jpeg" width="300" alt="Troje logo" />
 </p>
 
 <p align="center">
-  <em>Don't know where to put those random ideas, notes, or whatever? Alright welcome 🤗</em>
+  <em>Idea: "aprovechar el lote, comprar semillas pa' sembrar papa" → saved to Troje 🤗</em>
 </p>
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -11,7 +11,7 @@
 [![Neon](https://img.shields.io/badge/Neon-PostgreSQL-00e599?logo=neon)](https://neon.tech)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-Troje is an **idea capture and action layer** built for the moments inspiration strikes. Optimized for speed of entry, not elaborate categorization at the point of capture.
+Troje is an **idea capture** built for the moments inspiration strikes. Optimized for speed of entry, not elaborate categorization at the point of capture.
 
 ---
 
